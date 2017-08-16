@@ -29,7 +29,6 @@
         (get "id")
         int)))
 
-(def ^:private magic 0x0)
 
 (defn- byte-buffer->bytes
   [buffer]
@@ -44,7 +43,7 @@
 
 (defn- ->serialized-bytes [schema-id avro-schema data]
   (with-open [out (ByteArrayOutputStream.)]
-    (.write out magic)
+    (.write out kafka-avro-confluent.core/magic)
     (.write out (schema-id->bytes schema-id))
     (.write out (avro/binary-encoded avro-schema data))
     (.toByteArray out)))

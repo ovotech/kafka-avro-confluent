@@ -15,7 +15,8 @@
   [schema-registry data]
   (when data
     (let [buffer    (ByteBuffer/wrap data)
-          _magic    (.get buffer)
+          magic     (.get buffer)
+          _         (assert (= kafka-avro-confluent.core/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
           ;; FIXME this will hammer registry if used in prd settings
           schema    (registry/get-schema-by-id schema-registry schema-id)]
