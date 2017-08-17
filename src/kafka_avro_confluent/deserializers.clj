@@ -5,6 +5,8 @@
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
 
+(def ^:private get-schema-by-id-memo (memoize registry/get-schema-by-id))
+
 (defn- byte-buffer->bytes
   [buffer]
   (let [array (byte-array (.remaining buffer))]
@@ -18,8 +20,7 @@
           magic     (.get buffer)
           _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
-          ;; FIXME this will hammer registry if used in prd settings
-          schema    (registry/get-schema-by-id schema-registry schema-id)]
+          schema    (get-schema-by-id-memo schema-registry schema-id)]
 
       (avro/decode schema (byte-array (byte-buffer->bytes buffer))))))
 
