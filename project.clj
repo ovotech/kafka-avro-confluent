@@ -13,14 +13,11 @@
                  [clj-http "3.6.1"]
 
                  [org.apache.kafka/kafka-clients "0.10.2.1"
-                  :exclusions [org.scala-lang/scala-library]] ]
+                  :exclusions [org.scala-lang/scala-library]]]
 
   :repositories {"confluent" "http://packages.confluent.io/maven"}
 
-  :aot :all
-
-  :profiles {:uberjar {:aot :all}
-             :dev {:resource-paths ["test/resources"]
+  :profiles {:dev {:resource-paths ["test/resources"]
                    :dependencies   [[integrant "0.5.0"]
                                     [integrant/repl "0.2.0"]
                                     [io.confluent/kafka-schema-registry "3.3.0"

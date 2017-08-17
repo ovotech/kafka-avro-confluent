@@ -1,11 +1,9 @@
 (ns kafka-avro-confluent.serializers
   (:require [abracad.avro :as avro]
-            [cheshire.core :as json]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.io.ByteArrayOutputStream
            java.nio.ByteBuffer
-           kafka_avro_confluent.serializers.AvroSerializer
            org.apache.kafka.common.serialization.Serializer))
 
 ;; TODO make client memoized ??
@@ -71,6 +69,8 @@
    See https://avro.apache.org/
    See http://docs.confluent.io/current/schema-registry/docs
    See https://github.com/damballa/abracad"
-  (^kafka_avro_confluent.serializers.AvroSerializer [schema-registry schema]
-   (AvroSerializer. schema-registry schema)))
+  ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
+  ^AvroSerializer
+  [schema-registry schema]
+  (AvroSerializer. schema-registry schema))
 

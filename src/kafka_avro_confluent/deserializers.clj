@@ -3,7 +3,6 @@
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.nio.ByteBuffer
-           kafka_avro_confluent.deserializers.AvroDeserializer
            org.apache.kafka.common.serialization.Deserializer))
 
 (defn- byte-buffer->bytes
@@ -36,4 +35,7 @@
    See https://avro.apache.org/
    See http://docs.confluent.io/current/schema-registry/docs
    See https://github.com/damballa/abracad"
-  (^kafka_avro_confluent.deserializers.AvroDeserializer [schema-registry] (AvroDeserializer. schema-registry)))
+  ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
+  ^AvroDeserializer
+  [schema-registry]
+  (AvroDeserializer. schema-registry))
