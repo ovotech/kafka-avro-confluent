@@ -5,8 +5,7 @@
 
 (defn- schema->json
   [schema]
-  (let [schema-str (-> schema
-                       json/generate-string)]
+  (let [schema-str (json/generate-string schema)]
     (json/generate-string {"schema" schema-str})))
 
 (defn- -get-schema-by-id
@@ -53,7 +52,7 @@
           resp (http/get url
                          {:basic-auth [username password]}
                          :as :json)]
-      (-> resp :body)))
+      (:body resp)))
 
   (post-schema
     [_ subject schema]
