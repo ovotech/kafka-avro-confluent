@@ -1,6 +1,7 @@
 (ns kafka-avro-confluent.serializers
   (:require [abracad.avro :as avro]
             [cheshire.core :as json]
+            [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.io.ByteArrayOutputStream
            java.nio.ByteBuffer
@@ -43,7 +44,7 @@
 
 (defn- ->serialized-bytes [schema-id avro-schema data]
   (with-open [out (ByteArrayOutputStream.)]
-    (.write out kafka-avro-confluent.core/magic)
+    (.write out magic/magic)
     (.write out (schema-id->bytes schema-id))
     (.write out (avro/binary-encoded avro-schema data))
     (.toByteArray out)))

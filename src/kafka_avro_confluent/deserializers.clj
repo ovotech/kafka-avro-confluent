@@ -1,6 +1,7 @@
 (ns kafka-avro-confluent.deserializers
   (:require [abracad.avro :as avro]
             [abracad.avro.edn :as aedn]
+            [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
@@ -16,7 +17,7 @@
   (when data
     (let [buffer    (ByteBuffer/wrap data)
           magic     (.get buffer)
-          _         (assert (= kafka-avro-confluent.core/magic magic) (str "Found different magic byte: " magic))
+          _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
           ;; FIXME this will hammer registry if used in prd settings
           schema    (registry/get-schema-by-id schema-registry schema-id)]

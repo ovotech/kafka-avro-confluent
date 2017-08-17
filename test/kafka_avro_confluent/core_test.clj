@@ -1,6 +1,5 @@
 (ns kafka-avro-confluent.core-test
   (:require [clojure.test :refer :all]
-            [kafka-avro-confluent.core :refer :all]
             [kafka-avro-confluent.deserializers :as sut-des]
             [kafka-avro-confluent.schema-registry-client :as sut-reg]
             [kafka-avro-confluent.serializers :as sut-ser]
