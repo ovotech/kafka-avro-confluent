@@ -1,6 +1,5 @@
 (ns kafka-avro-confluent.deserializers
   (:require [abracad.avro :as avro]
-            [abracad.avro.edn :as aedn]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.nio.ByteBuffer
