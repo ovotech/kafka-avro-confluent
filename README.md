@@ -2,7 +2,14 @@
 
 Kafka De/Serializer using avro and Confluent's Schema Registry
 
+
 ## Usage
+
+[![Clojars Project](https://img.shields.io/clojars/v/ovotech/kafka-avro-confluent.svg)](https://clojars.org/ovotech/kafka-avro-confluent)
+```
+[ovotech/kafka-avro-confluent "0.7.0"]
+```
+
 
 ```clojure
 (ns kafka-avro-confluent.core-test
@@ -43,7 +50,7 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 
 
 ;; e.g. (org.apache.kafka.clients.producer.KafkaProducer. key-serializer
-                                                          value-serializer)
+;;                                                        value-serializer)
 
 ```
 
