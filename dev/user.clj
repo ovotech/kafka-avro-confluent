@@ -1,6 +1,6 @@
 (ns user
-  (:require [zookareg.core :as zkr]
-            [kafka-avro-confluent.schema-registry-client :as sut-reg]))
+  (:require [kafka-avro-confluent.schema-registry-client :as sut-reg]
+            [zookareg.core :as zkr]))
 
 (comment
 
@@ -8,8 +8,4 @@
 
   (def sr (sut-reg/->schema-registry-client {:base-url "http://localhost:8081"}))
 
-  (sut-reg/get-schema-by-id sr 1)
-
-
-
-  )
+  (sut-reg/get-schema-by-id sr 1))

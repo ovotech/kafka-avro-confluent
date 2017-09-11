@@ -4,7 +4,49 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 
 ## Usage
 
-FIXME
+```clojure
+(ns kafka-avro-confluent.core-test
+  (:require [kafka-avro-confluent.deserializers :as des]
+            [kafka-avro-confluent.schema-registry-client :as reg]
+            [kafka-avro-confluent.serializers :as ser]))
+
+;; initialise the Confluent Schema Registry client:
+(def schema-registry
+  (reg/->schema-registry-client {:base-url "http://localhost:8081"
+                                ;; auth optional!
+                                :username "mr.anderson"
+                                :password "42"}))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; # Deserializer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+;; implements org.apache.kafka.common.serialization.Deserializer
+(des/->avro-deserializer schema-registry)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; # Serializer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def some-value-schema {:type   "record"
+                        :name   "Foo"})
+
+;; implements org.apache.kafka.common.serialization.Serializer
+;; meant to be used as a value-serializer in a KafkaProducer
+(ser/->avro-serializer schema-registry some-value-schema)
+
+;; If you want to use it as a key-serializer:
+(def some-key-schema {:type "string"})
+(ser/->avro-serializer schema-registry :key some-key-schema)
+
+;; This is also valid:
+(ser/->avro-serializer schema-registry :value some-value-schema)
+
+
+;; e.g. (org.apache.kafka.clients.producer.KafkaProducer. key-serializer
+                                                          value-serializer)
+
+```
+
 
 ## License
 
