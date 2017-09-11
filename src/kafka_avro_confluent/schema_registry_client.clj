@@ -8,33 +8,57 @@
   (let [schema-str (json/generate-string schema)]
     (json/generate-string {"schema" schema-str})))
 
+(defn- -post-schema
+  [config subject schema]
+  (let [url  (str (:base-url config) "/subjects/" subject "/versions")
+        resp (http/post url
+                        {:basic-auth   [(:username config) (:password config)]
+                         :content-type "application/vnd.schemaregistry.v1+json"
+                         :as           :json
+                         :body         (schema->json schema)})]
+    (get-in resp [:body :id])))
+
+(defn- -get-schema-registry-config
+  [config]
+  (-> (http/get (str (:base-url config) "/config")
+                {:basic-auth   [(:username config) (:password config)]
+                 :conn-timeout 1000})
+      :body
+      (json/parse-string true)))
+
 (defn- -get-schema-by-id
   [config id]
   (let [url  (str (:base-url config) "/schemas/ids/" id)
         resp (http/get url
                        {:as :json
-                        :basic-auth [(:username config) (:password config)]})]
-    (-> resp
-        :body
-        :schema
-        avro/parse-schema)))
+                        :basic-auth [(:username config)
+                                     (:password config)]})]
+    (:body resp)))
+
+(defn- -get-latest-schema-by-subject
+  [config subject]
+  (let [url  (str (:base-url config) "/subjects/" subject "/versions/latest")
+        resp (http/get url
+                       {:as :json
+                        :basic-auth [(:username config)
+                                     (:password config)]})]
+    (:body resp)))
+
+(defn- -get-avro-schema-by-id
+  [config id]
+  (-> (-get-schema-by-id config id)
+      :schema
+      avro/parse-schema))
 
 (defprotocol SchemaRegistry
   (healthy? [this])
   (get-config [this])
-  (get-subject-by-topic [this topic])
   (post-schema [this subject schema])
-  (get-schema-by-id [this id]))
+  (get-latest-schema-by-subject [this subject])
+  (get-avro-schema-by-id [this id]))
 
 (defrecord SchemaRegistryImpl [config]
   SchemaRegistry
-  (get-config [_]
-    (-> (http/get (str (:base-url config) "/config")
-                  {:basic-auth   [(:username config) (:password config)]
-                   :conn-timeout 1000})
-        :body
-        (json/parse-string true)))
-
   (healthy? [this]
     (try
       (contains? (get-config this)
@@ -42,29 +66,17 @@
       (catch Exception e
         false)))
 
-  ;; TODO rename? document? what does it do?
-  (get-subject-by-topic
-    [_ topic]
-    (let [{:keys [username password base-url]} config
-          url  (format "%s/subjects/%s/versions/1"
-                       base-url
-                       (str topic "-value"))
-          resp (http/get url
-                         {:basic-auth [username password]}
-                         :as :json)]
-      (:body resp)))
+  (get-config [_] (-get-schema-registry-config config))
 
   (post-schema
     [_ subject schema]
-    (let [url  (str (:base-url config) "/subjects/" subject "-value/versions")
-          resp (http/post url
-                          {:basic-auth   [(:username config) (:password config)]
-                           :content-type "application/vnd.schemaregistry.v1+json"
-                           :as           :json
-                           :body         (schema->json schema)})]
-      (get-in resp [:body :id])))
+    (-post-schema config subject schema))
 
-  (get-schema-by-id [_ id] (-get-schema-by-id config id)))
+  (get-latest-schema-by-subject
+    [_ subject]
+    (-get-latest-schema-by-subject config subject))
+
+  (get-avro-schema-by-id [_ id] (-get-avro-schema-by-id config id)))
 
 (def ->schema-registry-client ->SchemaRegistryImpl)
 

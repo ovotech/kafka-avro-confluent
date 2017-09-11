@@ -27,28 +27,35 @@
     (.toByteArray out)))
 
 (defn- -serialize
-  [schema-registry topic schema data]
+  [schema-registry serializer-type topic schema data]
   (when data
     (let [avro-schema      (avro/parse-schema schema)
-          schema-id        (post-schema-memo schema-registry topic schema)
+          subject          (format "%s-%s" topic (name serializer-type))
+          schema-id        (post-schema-memo schema-registry subject schema)
           serialized-bytes (->serialized-bytes schema-id avro-schema data)]
       serialized-bytes)))
 
-(deftype AvroSerializer [schema-registry schema]
+(deftype AvroSerializer [schema-registry serializer-type schema]
   Serializer
   (configure [_ _ _])
-  (serialize [_ topic data] (-serialize schema-registry topic schema data))
+  (serialize [_ topic data] (-serialize schema-registry serializer-type topic schema data))
   (close [_]))
 
 (defn ->avro-serializer
   "Avro serializer for Apache Kafka using Confluent's Schema Registry.
   Use for serializing Kafka keys values.
   Values will be serialized according to the provided schema.
+
+  `serializer-type` will be used for determining the suffix (`-key` or `-value`) used for registering
+  the schema with the Schema Registry. It must be one of `#{:key :value}`
+
    See https://avro.apache.org/
    See http://docs.confluent.io/current/schema-registry/docs
    See https://github.com/damballa/abracad"
   ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
-  ^AvroSerializer
-  [schema-registry schema]
-  (AvroSerializer. schema-registry schema))
+  (^AvroSerializer [schema-registry schema]
+   (AvroSerializer. schema-registry :value schema))
+  (^AvroSerializer [schema-registry serializer-type schema]
+   {:pre [(#{:key :value} serializer-type)]}
+   (AvroSerializer. schema-registry serializer-type schema)))
 
