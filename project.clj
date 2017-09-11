@@ -9,9 +9,9 @@
 
   :dependencies [[org.clojure/clojure "1.9.0-alpha20"]
                  [com.damballa/abracad "0.4.13"]
-                 [cheshire "5.7.1"]
+                 [cheshire "5.8.0"]
 
-                 [clj-http "3.6.1"]
+                 [clj-http "3.7.0"]
 
                  [org.apache.kafka/kafka-clients "0.10.2.1"
                   :exclusions [org.scala-lang/scala-library]]]
