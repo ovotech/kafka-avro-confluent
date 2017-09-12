@@ -57,7 +57,7 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 
 ## License
 
-Copyright © 2017 Ovo LTD
+Copyright © 2017 OVO Energy Ltd.
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
