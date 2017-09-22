@@ -1,11 +1,12 @@
 (ns kafka-avro-confluent.deserializers
   (:require [abracad.avro :as avro]
+            [clojure.core.memoize :refer [memo]]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
 
-(def ^:private get-schema-by-id-memo (memoize registry/get-avro-schema-by-id))
+(def ^:private get-schema-by-id-memo (memo registry/get-avro-schema-by-id))
 
 (defn- byte-buffer->bytes
   [buffer]

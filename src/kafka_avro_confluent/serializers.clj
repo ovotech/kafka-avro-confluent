@@ -1,12 +1,13 @@
 (ns kafka-avro-confluent.serializers
   (:require [abracad.avro :as avro]
+            [clojure.core.memoize :refer [memo]]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.io.ByteArrayOutputStream
            java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Serializer))
 
-(def ^:private post-schema-memo (memoize registry/post-schema))
+(def ^:private post-schema-memo (memo registry/post-schema))
 
 (defn- byte-buffer->bytes
   [buffer]
