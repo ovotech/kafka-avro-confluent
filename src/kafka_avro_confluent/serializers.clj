@@ -7,7 +7,7 @@
            java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Serializer))
 
-(def ^:private post-schema-memo (memo registry/post-schema))
+(def post-schema-memo (memo registry/post-schema))
 
 (defn- byte-buffer->bytes
   [buffer]

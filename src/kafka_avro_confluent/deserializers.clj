@@ -6,7 +6,7 @@
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
 
-(def ^:private get-schema-by-id-memo (memo registry/get-avro-schema-by-id))
+(def get-schema-by-id-memo (memo registry/get-avro-schema-by-id))
 
 (defn- byte-buffer->bytes
   [buffer]
