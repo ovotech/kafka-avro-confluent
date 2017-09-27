@@ -1,7 +1,8 @@
 (ns kafka-avro-confluent.schema-registry-client
   (:require [abracad.avro :as avro]
             [cheshire.core :as json]
-            [clj-http.client :as http]))
+            [clj-http.client :as http]
+            [clojure.core.memoize :refer [memo]]))
 
 (defn- schema->json
   [schema]
@@ -57,7 +58,7 @@
   (get-latest-schema-by-subject [this subject])
   (get-avro-schema-by-id [this id]))
 
-(defrecord SchemaRegistryImpl [config]
+(defrecord SchemaRegistryImpl [memoized-fns config]
   SchemaRegistry
   (healthy? [this]
     (try
@@ -70,15 +71,19 @@
 
   (post-schema
     [_ subject schema]
-    (-post-schema config subject schema))
+    ((:post-schema memoized-fns) config subject schema))
 
   (get-latest-schema-by-subject
     [_ subject]
-    (-get-latest-schema-by-subject config subject))
+    ((:get-latest-schema-by-subject memoized-fns) config subject))
 
-  (get-avro-schema-by-id [_ id] (-get-avro-schema-by-id config id)))
+  (get-avro-schema-by-id [_ id] ((:get-avro-schema-by-id memoized-fns) config id)))
 
-(def ->schema-registry-client ->SchemaRegistryImpl)
+(defn ->schema-registry-client [config]
+  (let [memoized-fns {:post-schema                  (memo -post-schema)
+                      :get-avro-schema-by-id        (memo -get-avro-schema-by-id)
+                      :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
+    (->SchemaRegistryImpl memoized-fns config)))
 
 (comment
 

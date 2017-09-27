@@ -21,50 +21,50 @@
 (def schema-registry (sut-reg/->schema-registry-client {:base-url "http://localhost:8081"}))
 
 (deftest avro-serde
-      (testing "Can round-trip"
-        (let [serializer   (sut-ser/->avro-serializer schema-registry dummy-schema)
-              deserializer (sut-des/->avro-deserializer schema-registry)
-              topic (dummy-topic)]
+  (testing "Can round-trip"
+    (let [serializer   (sut-ser/->avro-serializer schema-registry dummy-schema)
+          deserializer (sut-des/->avro-deserializer schema-registry)
+          topic (dummy-topic)]
 
-          (is (= dummy-data
-                 (->> dummy-data
-                      (.serialize serializer topic)
-                      (.deserialize deserializer topic))))
+      (is (= dummy-data
+             (->> dummy-data
+                  (.serialize serializer topic)
+                  (.deserialize deserializer topic))))
 
-          (testing "uses :value as default `serializer-type`"
-            (is (sut-reg/get-latest-schema-by-subject schema-registry
-                                                      (str topic "-value")))))))
+      (testing "uses :value as default `serializer-type`"
+        (is (sut-reg/get-latest-schema-by-subject schema-registry
+                                                  (str topic "-value")))))))
 
 (deftest avro-serde-with-explicit-serializer-type
 
-      (testing ":value"
-        (let [serializer   (sut-ser/->avro-serializer schema-registry :value dummy-schema)
-              deserializer (sut-des/->avro-deserializer schema-registry)
-              topic        (dummy-topic)]
+  (testing ":value"
+    (let [serializer   (sut-ser/->avro-serializer schema-registry :value dummy-schema)
+          deserializer (sut-des/->avro-deserializer schema-registry)
+          topic        (dummy-topic)]
 
-          (is (= dummy-data
-                 (->> dummy-data
-                      (.serialize serializer topic)
-                      (.deserialize deserializer topic))))
+      (is (= dummy-data
+             (->> dummy-data
+                  (.serialize serializer topic)
+                  (.deserialize deserializer topic))))
 
-          (is (sut-reg/get-latest-schema-by-subject schema-registry
-                                                    (str topic "-value")))))
+      (is (sut-reg/get-latest-schema-by-subject schema-registry
+                                                (str topic "-value")))))
 
-      (testing ":key"
-        (let [serializer   (sut-ser/->avro-serializer schema-registry :key dummy-schema)
-              deserializer (sut-des/->avro-deserializer schema-registry)
-              topic        (dummy-topic)]
+  (testing ":key"
+    (let [serializer   (sut-ser/->avro-serializer schema-registry :key dummy-schema)
+          deserializer (sut-des/->avro-deserializer schema-registry)
+          topic        (dummy-topic)]
 
-          (is (= dummy-data
-                 (->> dummy-data
-                      (.serialize serializer topic)
-                      (.deserialize deserializer topic))))
+      (is (= dummy-data
+             (->> dummy-data
+                  (.serialize serializer topic)
+                  (.deserialize deserializer topic))))
 
-          (is (sut-reg/get-latest-schema-by-subject schema-registry
-                                                    (str topic "-key")))))
+      (is (sut-reg/get-latest-schema-by-subject schema-registry
+                                                (str topic "-key")))))
 
-      (testing "throws when invalid `serializer-type`"
-        (is (thrown? AssertionError
-                     (sut-ser/->avro-serializer schema-registry
-                                                :nefarious-serializer-type
-                                                dummy-schema)))))
+  (testing "throws when invalid `serializer-type`"
+    (is (thrown? AssertionError
+                 (sut-ser/->avro-serializer schema-registry
+                                            :nefarious-serializer-type
+                                            dummy-schema)))))

@@ -1,12 +1,9 @@
 (ns kafka-avro-confluent.deserializers
   (:require [abracad.avro :as avro]
-            [clojure.core.memoize :refer [memo]]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
-
-(def get-schema-by-id-memo (memo registry/get-avro-schema-by-id))
 
 (defn- byte-buffer->bytes
   [buffer]
@@ -21,8 +18,7 @@
           magic     (.get buffer)
           _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
-          schema    (get-schema-by-id-memo schema-registry schema-id)]
-
+          schema    (registry/get-avro-schema-by-id schema-registry schema-id)]
       (avro/decode schema (byte-array (byte-buffer->bytes buffer))))))
 
 (deftype AvroDeserializer [schema-registry]

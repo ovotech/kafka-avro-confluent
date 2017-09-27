@@ -1,13 +1,10 @@
 (ns kafka-avro-confluent.serializers
   (:require [abracad.avro :as avro]
-            [clojure.core.memoize :refer [memo]]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.io.ByteArrayOutputStream
            java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Serializer))
-
-(def post-schema-memo (memo registry/post-schema))
 
 (defn- byte-buffer->bytes
   [buffer]
@@ -32,7 +29,7 @@
   (when data
     (let [avro-schema      (avro/parse-schema schema)
           subject          (format "%s-%s" topic (name serializer-type))
-          schema-id        (post-schema-memo schema-registry subject schema)
+          schema-id        (registry/post-schema schema-registry subject schema)
           serialized-bytes (->serialized-bytes schema-id avro-schema data)]
       serialized-bytes)))
 
