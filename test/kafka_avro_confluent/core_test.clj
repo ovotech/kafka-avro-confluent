@@ -3,10 +3,10 @@
             [kafka-avro-confluent.deserializers :as sut-des]
             [kafka-avro-confluent.schema-registry-client :as sut-reg]
             [kafka-avro-confluent.serializers :as sut-ser]
-            [zookareg.core :as tu])
+            [zookareg.core :as zkr])
   (:import java.util.UUID))
 
-(use-fixtures :once tu/with-zookareg-test-fixture)
+(use-fixtures :once zkr/with-zookareg-fn)
 
 (def dummy-schema {:type   "record"
                    :name   "Foo"

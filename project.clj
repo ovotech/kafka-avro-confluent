@@ -22,4 +22,4 @@
   :aot [kafka-avro-confluent.serializers
         kafka-avro-confluent.deserializers]
 
-  :profiles {:dev {:dependencies   [[vise890/zookareg "0.2.4"]]}})
+  :profiles {:dev {:dependencies   [[vise890/zookareg "0.5.6"]]}})
