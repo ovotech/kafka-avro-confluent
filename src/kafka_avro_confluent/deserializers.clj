@@ -34,6 +34,6 @@
    See http://docs.confluent.io/current/schema-registry/docs
    See https://github.com/damballa/abracad"
   ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
-  ^AvroDeserializer
+  ^kafka_avro_confluent.deserializers.AvroDeserializer
   [schema-registry]
   (AvroDeserializer. schema-registry))
