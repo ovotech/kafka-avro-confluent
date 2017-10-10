@@ -1,4 +1,4 @@
-(defproject ovotech/kafka-avro-confluent "0.8.3"
+(defproject ovotech/kafka-avro-confluent "0.8.4-SNAPSHOT"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
@@ -18,8 +18,5 @@
                   :exclusions [org.scala-lang/scala-library]]]
 
   :repositories {"confluent" "http://packages.confluent.io/maven"}
-
-  :aot [kafka-avro-confluent.serializers
-        kafka-avro-confluent.deserializers]
 
   :profiles {:dev {:dependencies   [[vise890/zookareg "0.5.6"]]}})
