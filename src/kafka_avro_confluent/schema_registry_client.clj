@@ -31,7 +31,7 @@
   [config id]
   (let [url  (str (:base-url config) "/schemas/ids/" id)
         resp (http/get url
-                       {:as :json
+                       {:as         :json
                         :basic-auth [(:username config)
                                      (:password config)]})]
     (:body resp)))
@@ -77,12 +77,15 @@
     [_ subject]
     ((:get-latest-schema-by-subject memoized-fns) config subject))
 
-  (get-avro-schema-by-id [_ id] ((:get-avro-schema-by-id memoized-fns) config id)))
+  (get-avro-schema-by-id
+    [_ id]
+    ((:get-avro-schema-by-id memoized-fns) config id)))
 
 (defn ->schema-registry-client [config]
-  (let [memoized-fns {:post-schema                  (memo -post-schema)
-                      :get-avro-schema-by-id        (memo -get-avro-schema-by-id)
-                      :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
+  (let [memoized-fns
+        {:post-schema                  (memo -post-schema)
+         :get-avro-schema-by-id        (memo -get-avro-schema-by-id)
+         :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
     (->SchemaRegistryImpl memoized-fns config)))
 
 (comment

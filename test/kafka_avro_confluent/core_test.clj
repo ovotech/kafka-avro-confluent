@@ -18,7 +18,8 @@
 (defn dummy-topic []
   (str (UUID/randomUUID)))
 
-(def schema-registry (sut-reg/->schema-registry-client {:base-url "http://localhost:8081"}))
+(def schema-registry
+  (sut-reg/->schema-registry-client {:base-url "http://localhost:8081"}))
 
 (deftest avro-serde
   (testing "Can round-trip"
@@ -38,7 +39,9 @@
 (deftest avro-serde-with-explicit-serializer-type
 
   (testing ":value"
-    (let [serializer   (sut-ser/->avro-serializer schema-registry :value dummy-schema)
+    (let [serializer   (sut-ser/->avro-serializer schema-registry
+                                                  :value
+                                                  dummy-schema)
           deserializer (sut-des/->avro-deserializer schema-registry)
           topic        (dummy-topic)]
 
@@ -51,7 +54,9 @@
                                                 (str topic "-value")))))
 
   (testing ":key"
-    (let [serializer   (sut-ser/->avro-serializer schema-registry :key dummy-schema)
+    (let [serializer   (sut-ser/->avro-serializer schema-registry
+                                                  :key
+                                                  dummy-schema)
           deserializer (sut-des/->avro-deserializer schema-registry)
           topic        (dummy-topic)]
 
