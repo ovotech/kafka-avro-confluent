@@ -1,4 +1,4 @@
 (ns kafka-avro-confluent.magic)
 
-(def magic 0x0)
+(def ^Integer/TYPE magic 0x0)
 

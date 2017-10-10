@@ -6,13 +6,7 @@
            java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Serializer))
 
-(defn- byte-buffer->bytes
-  [buffer]
-  (let [array (byte-array (.remaining buffer))]
-    (.get buffer array)
-    array))
-
-(defn- schema-id->bytes [schema-id]
+(defn- #^"[B" schema-id->bytes [schema-id]
   (-> (ByteBuffer/allocate 4)
       (.putInt schema-id)
       .array))
@@ -21,7 +15,7 @@
   (with-open [out (ByteArrayOutputStream.)]
     (.write out magic/magic)
     (.write out (schema-id->bytes schema-id))
-    (.write out (avro/binary-encoded avro-schema data))
+    (.write out #^"[B" (avro/binary-encoded avro-schema data))
     (.toByteArray out)))
 
 (defn- -serialize

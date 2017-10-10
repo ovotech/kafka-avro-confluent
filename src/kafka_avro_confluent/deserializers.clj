@@ -5,8 +5,8 @@
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
 
-(defn- byte-buffer->bytes
-  [buffer]
+(defn #^"[B" byte-buffer->bytes
+  [^ByteBuffer buffer]
   (let [array (byte-array (.remaining buffer))]
     (.get buffer array)
     array))
@@ -19,7 +19,7 @@
           _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
           schema    (registry/get-avro-schema-by-id schema-registry schema-id)]
-      (avro/decode schema (byte-array (byte-buffer->bytes buffer))))))
+      (avro/decode schema (byte-buffer->bytes buffer)))))
 
 (deftype AvroDeserializer [schema-registry]
   Deserializer
