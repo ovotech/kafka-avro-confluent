@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.9.0-alpha20"]
+  :dependencies [[org.clojure/clojure "1.9.0-beta2"]
                  [org.clojure/core.memoize "0.5.9"]
                  [com.damballa/abracad "0.4.13"]
                  [cheshire "5.8.0"]
