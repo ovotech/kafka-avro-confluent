@@ -2,22 +2,49 @@
   (:require [abracad.avro :as avro]
             [cheshire.core :as json]
             [clj-http.client :as http]
-            [clojure.core.memoize :refer [memo]]))
+            [clojure.core.memoize :refer [memo]]
+            [clojure.tools.logging :as log]
+            [fipp.edn :as fipp])
+  (:import clojure.lang.ExceptionInfo))
 
 (defn- schema->json
   [schema]
   (let [schema-str (json/generate-string schema)]
     (json/generate-string {"schema" schema-str})))
 
+(defn merge-ex-data
+  [ex data]
+  (condp instance? ex
+    ExceptionInfo
+    (ExceptionInfo. (.getMessage ex)
+                    (merge (ex-data ex)
+                           data)
+                    ex)
+    Exception
+    (ExceptionInfo. (.getMessage ex)
+                    data
+                    ex)))
+(defn pretty
+  [x]
+  (with-out-str (fipp/pprint x)))
+
 (defn- -post-schema
   [config subject schema]
   (let [url  (str (:base-url config) "/subjects/" subject "/versions")
-        resp (http/post url
-                        {:basic-auth   [(:username config) (:password config)]
-                         :content-type "application/vnd.schemaregistry.v1+json"
-                         :as           :json
-                         :body         (schema->json schema)})]
-    (get-in resp [:body :id])))
+        body (schema->json schema)]
+    (try
+      (-> url
+          (http/post {:basic-auth   [(:username config) (:password config)]
+                      :content-type "application/vnd.schemaregistry.v1+json"
+                      :as           :json
+                      :body         body})
+          (get-in [:body :id]))
+      (catch Exception ex
+        (let [exi (merge-ex-data ex {:post-url  url
+                                     :post-body body
+                                     :schema    schema})]
+          (log/error ex "Post to schema registry failed!" (pretty (ex-data exi)))
+          (throw exi))))))
 
 (defn- -get-schema-registry-config
   [config]

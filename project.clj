@@ -15,11 +15,12 @@
                  [clj-http "3.7.0"]
 
                  [org.apache.kafka/kafka-clients "0.10.2.1"
-                  :exclusions [org.scala-lang/scala-library]]]
+                  :exclusions [org.scala-lang/scala-library]]
+                 [fipp "0.6.12"]]
 
   :aot [kafka-avro-confluent.serializers
         kafka-avro-confluent.deserializers]
 
-  :repositories {"confluent" "http://packages.confluent.io/maven"}
+  :repositories {"confluent" "https://packages.confluent.io/maven"}
 
   :profiles {:dev {:dependencies   [[vise890/zookareg "0.5.6"]]}})
