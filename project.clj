@@ -26,6 +26,6 @@
 
   :profiles {:dev {:dependencies   [[vise890/zookareg "0.5.6"]]}
              :ci {:deploy-repositories [["clojars" {:url           "https://clojars.org/repo"
-                                                    :username      :env
-                                                    :password      :env
+                                                    :username      :env ;; LEIN_USERNAME
+                                                    :password      :env ;; LEIN_PASSWORD
                                                     :sign-releases false}]]}})
