@@ -3,6 +3,7 @@
             [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.core.memoize :refer [memo]]
+            [clojure.pprint :as pprint]
             [clojure.tools.logging :as log])
   (:import clojure.lang.ExceptionInfo))
 
@@ -23,6 +24,9 @@
     (ExceptionInfo. (.getMessage ex)
                     data
                     ex)))
+(defn pretty
+  [x]
+  (with-out-str (pprint/pprint x)))
 
 (defn- -post-schema
   [config subject schema]
