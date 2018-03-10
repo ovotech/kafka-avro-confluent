@@ -6,7 +6,6 @@
             [zookareg.core :as zkr])
   (:import java.util.UUID))
 
-
 (defn ->dummy-schema [field-name]
   {:type   "record"
    :name   "Record"

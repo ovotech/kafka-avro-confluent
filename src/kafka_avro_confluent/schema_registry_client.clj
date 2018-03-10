@@ -135,7 +135,6 @@
     [_ id]
     ((:get-schema-by-id memoized-fns) config id)))
 
-
 (s/def ::non-blank-string (s/and string? (complement string/blank?)))
 (s/def ::base-url ::non-blank-string)
 (s/def ::username ::non-blank-string)

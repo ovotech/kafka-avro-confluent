@@ -24,7 +24,7 @@
 ;; # Serializer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; implements org.apache.kafka.common.serialization.Serializer
-(def some-value-schema {:type "record" :name "Foo"}) 
+(def some-value-schema {:type "record" :name "Foo"})
 
 ;; meant to be used as a value-serializer in a KafkaProducer
 (ser/->avro-serializer schema-registry some-value-schema)
