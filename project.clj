@@ -19,6 +19,7 @@
                  [org.clojure/tools.logging "0.4.0"]]
 
   :aot [kafka-avro-confluent.serializers
+        kafka-avro-confluent.serde
         kafka-avro-confluent.deserializers]
 
   :repositories {"confluent" "https://packages.confluent.io/maven"}
