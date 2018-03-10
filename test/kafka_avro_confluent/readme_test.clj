@@ -1,17 +1,3 @@
-# kafka-avro-confluent
-
-Kafka De/Serializer using avro and Confluent's Schema Registry
-
-
-## Usage
-
-[![Clojars Project](https://img.shields.io/clojars/v/ovotech/kafka-avro-confluent.svg)](https://clojars.org/ovotech/kafka-avro-confluent)
-```
-[ovotech/kafka-avro-confluent "0.8.0"]
-```
-
-
-```clojure
 (ns kafka-avro-confluent.readme-test
   (:require [clojure.walk :as walk]
             [kafka-avro-confluent.deserializers :as des]
@@ -38,7 +24,7 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 ;; # Serializer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; implements org.apache.kafka.common.serialization.Serializer
-(def some-value-schema {:type "record" :name "Foo"})
+(def some-value-schema {:type "record" :name "Foo"}) 
 
 ;; meant to be used as a value-serializer in a KafkaProducer
 (ser/->avro-serializer schema-registry some-value-schema)
@@ -65,12 +51,3 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
                 {:schema-registry-client {:base-url "http://localhost:8081"}
                  :serializer             {:avro-schema {:type "string"}}})]
     (doto (Serde.) (.configure config isKey))))
-```
-
-
-## License
-
-Copyright © 2017 OVO Energy Ltd.
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
