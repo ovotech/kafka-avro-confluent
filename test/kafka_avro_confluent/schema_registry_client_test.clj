@@ -42,3 +42,15 @@
   (testing "should use different memo caches across object instances"
     (roundtrip-first-schema-post "First")
     (roundtrip-first-schema-post "Different")))
+
+(deftest healthcheck
+  (testing "is healthy when all the deps are up"
+    (zkr/with-zookareg zkr/default-config
+      (let [c (sut/->schema-registry-client
+               {:base-url "http://localhost:8081"})]
+        (is (sut/healthy? c)))))
+  (testing "is unhealthy when deps are down"
+    ;; NOTE no zookareg
+    (let [c (sut/->schema-registry-client
+             {:base-url "http://localhost:8081"})]
+      (is (not (sut/healthy? c))))))
