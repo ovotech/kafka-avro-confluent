@@ -57,7 +57,7 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; # Serde
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; implementation of org.apache.kafka.common.serialization.Serde
+;; implements org.apache.kafka.common.serialization.Serde
 
 (def serde
   (let [isKey  false
