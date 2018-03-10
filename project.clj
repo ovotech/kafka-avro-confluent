@@ -16,7 +16,6 @@
 
                  [org.apache.kafka/kafka-clients "0.10.2.1"
                   :exclusions [org.scala-lang/scala-library]]
-                 [fipp "0.6.12"]
                  [org.clojure/tools.logging "0.4.0"]]
 
   :aot [kafka-avro-confluent.serializers

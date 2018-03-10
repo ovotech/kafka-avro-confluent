@@ -3,8 +3,7 @@
             [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.core.memoize :refer [memo]]
-            [clojure.tools.logging :as log]
-            [fipp.edn :as fipp])
+            [clojure.tools.logging :as log])
   (:import clojure.lang.ExceptionInfo))
 
 (defn- schema->json
@@ -24,9 +23,6 @@
     (ExceptionInfo. (.getMessage ex)
                     data
                     ex)))
-(defn pretty
-  [x]
-  (with-out-str (fipp/pprint x)))
 
 (defn- -post-schema
   [config subject schema]
