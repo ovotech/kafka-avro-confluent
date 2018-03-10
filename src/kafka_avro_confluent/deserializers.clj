@@ -18,7 +18,7 @@
           magic     (.get buffer)
           _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
-          schema    (registry/get-avro-schema-by-id schema-registry schema-id)]
+          schema    (registry/get-schema-by-id schema-registry schema-id)]
       (avro/decode schema (byte-buffer->bytes buffer)))))
 
 (deftype AvroDeserializer [schema-registry]

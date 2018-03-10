@@ -1,5 +1,7 @@
 (ns kafka-avro-confluent.schema-registry-client
-  (:require [abracad.avro :as avro]
+  (:require [clojure.spec.alpha :as s]
+            [clojure.string :as string]
+            [abracad.avro :as avro]
             [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.core.memoize :refer [memo]]
@@ -12,7 +14,7 @@
   (let [schema-str (json/generate-string schema)]
     (json/generate-string {"schema" schema-str})))
 
-(defn merge-ex-data
+(defn- merge-ex-data
   [ex data]
   (condp instance? ex
     ExceptionInfo
@@ -24,35 +26,52 @@
     (ExceptionInfo. (.getMessage ex)
                     data
                     ex)))
-(defn pretty
+(defn- pretty
   [x]
   (with-out-str (pprint/pprint x)))
 
+(defn- -get-config
+  [config]
+  (-> (http/get
+       (str (:base-url config) "/config")
+       {:basic-auth   [(:username config) (:password config)]
+        :as           :json
+        :conn-timeout 1000})
+      :body))
+
+(defn -healthy?
+  [config]
+  (try
+    (contains? (-get-config config)
+               :compatibilityLevel)
+    (catch Exception e
+      false)))
+
 (defn- -post-schema
   [config subject schema]
-  (let [url  (str (:base-url config) "/subjects/" subject "/versions")
+  ;; TODO better url creation
+  (let [url  (str (:base-url config)
+                  "/subjects/"
+                  subject
+                  "/versions")
         body (schema->json schema)]
     (try
-      (-> url
-          (http/post {:basic-auth   [(:username config) (:password config)]
-                      :content-type "application/vnd.schemaregistry.v1+json"
-                      :as           :json
-                      :body         body})
+      (-> (http/post url
+                     {:basic-auth [(:username config)
+                                   (:password config)]
+                      :content-type
+                      "application/vnd.schemaregistry.v1+json"
+                      :as         :json
+                      :body       body})
           (get-in [:body :id]))
       (catch Exception ex
         (let [exi (merge-ex-data ex {:post-url  url
                                      :post-body body
                                      :schema    schema})]
-          (log/error ex "Post to schema registry failed!" (pretty (ex-data exi)))
+          (log/error ex
+                     "Post to schema registry failed!"
+                     (pretty (ex-data exi)))
           (throw exi))))))
-
-(defn- -get-schema-registry-config
-  [config]
-  (-> (http/get (str (:base-url config) "/config")
-                {:basic-auth   [(:username config) (:password config)]
-                 :conn-timeout 1000})
-      :body
-      (json/parse-string true)))
 
 (defn- -get-schema-by-id
   [config id]
@@ -61,40 +80,38 @@
                        {:as         :json
                         :basic-auth [(:username config)
                                      (:password config)]})]
-    (:body resp)))
+    (-> resp
+        :body
+        :schema
+        (json/parse-string true))))
 
 (defn- -get-latest-schema-by-subject
   [config subject]
-  (let [url  (str (:base-url config) "/subjects/" subject "/versions/latest")
+  (let [url  (str (:base-url config)
+                  "/subjects/"
+                  subject
+                  "/versions/latest")
         resp (http/get url
-                       {:as :json
+                       {:as         :json
                         :basic-auth [(:username config)
                                      (:password config)]})]
-    (:body resp)))
-
-(defn- -get-avro-schema-by-id
-  [config id]
-  (-> (-get-schema-by-id config id)
-      :schema
-      avro/parse-schema))
+    (-> resp
+        :body
+        :schema
+        (json/parse-string true))))
 
 (defprotocol SchemaRegistry
-  (healthy? [this])
-  (get-config [this])
-  (post-schema [this subject schema])
-  (get-latest-schema-by-subject [this subject])
-  (get-avro-schema-by-id [this id]))
+  "A Confluent Schema Registry client."
+  (get-config  [this] "Returns the Schema Registry configuration map.")
+  (healthy? [this] "Can the Schema Registry be contacted, and do its responses look right?")
+  (post-schema  [this subject schema] "Posts an Avro Schema. Return the Schema Id.")
+  (get-schema-by-id [this id] "Fetches a Schema by Schema Id.")
+  (get-latest-schema-by-subject [this subject] "Gets the latest Schema for a given subject."))
 
 (defrecord SchemaRegistryImpl [memoized-fns config]
   SchemaRegistry
-  (healthy? [this]
-    (try
-      (contains? (get-config this)
-                 :compatibilityLevel)
-      (catch Exception e
-        false)))
-
-  (get-config [_] (-get-schema-registry-config config))
+  (healthy? [this] (-healthy? config))
+  (get-config [_] (-get-config config))
 
   (post-schema
     [_ subject schema]
@@ -104,26 +121,28 @@
     [_ subject]
     ((:get-latest-schema-by-subject memoized-fns) config subject))
 
-  (get-avro-schema-by-id
+  (get-schema-by-id
     [_ id]
-    ((:get-avro-schema-by-id memoized-fns) config id)))
+    ((:get-schema-by-id memoized-fns) config id)))
 
-(defn ->schema-registry-client [config]
+
+(s/def ::non-blank-string (s/and string? (complement string/blank?)))
+(s/def ::base-url ::non-blank-string)
+(s/def ::username ::non-blank-string)
+(s/def ::password ::non-blank-string)
+
+(s/def ::config
+  (s/keys :req-un [::base-url]
+          :opt-un [::username ::password]))
+
+(s/fdef ->schema-registry-client
+        :args (s/cat :config ::config))
+(defn ->schema-registry-client
+  "Returns an instance of the schema-registry-client"
+  [config]
+  (s/assert ::config config)
   (let [memoized-fns
         {:post-schema                  (memo -post-schema)
-         :get-avro-schema-by-id        (memo -get-avro-schema-by-id)
+         :get-schema-by-id             (memo -get-schema-by-id)
          :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
     (->SchemaRegistryImpl memoized-fns config)))
-
-(comment
-
-  (def sr (->schema-registry-client {:base-url "http://localhost:8081"}))
-
-  (healthy? sr)
-
-  (def test-schema {:type   "record",
-                    :name   "Foo",
-                    :fields [{:name "fooId", :type "string"}]})
-
-  (let [id (post-schema sr "foo" test-schema)]
-    (get-schema-by-id sr id)))
