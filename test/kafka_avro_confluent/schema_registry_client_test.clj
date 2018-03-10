@@ -24,6 +24,7 @@
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           #"Spec assertion failed"
                           (sut/->schema-registry-client {})))))
+
 (deftest healthy?-test
   (testing "is healthy when all the deps are up"
     (zkr/with-zookareg zkr/default-config
@@ -44,6 +45,21 @@
                {:base-url "http://localhost:8081"})
             config (sut/get-config c)]
         (is (= "BACKWARD" (:compatibilityLevel config)))))))
+
+(deftest get-config-test
+  (testing "can list subjects"
+    (let [sr (sut/->schema-registry-client
+              {:base-url "http://localhost:8081"})]
+      (zkr/with-zookareg zkr/default-config
+        (let [subjects (sut/list-subjects sr)]
+          (is (empty? subjects) "initially, subjects should be empty"))
+        (testing "posting to a subject and then retrieving subj liist"
+          (let [subject      "my-subject"
+                schema       (->dummy-schema "Beep")
+                _            (sut/post-schema sr subject schema)
+                exp-subjects [subject]
+                act-subjects (sut/list-subjects sr)]
+            (is (= exp-subjects act-subjects))))))))
 
 (deftest posting-and-getting-schemas
   (zkr/with-zookareg zkr/default-config

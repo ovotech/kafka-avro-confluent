@@ -47,6 +47,14 @@
     (catch Exception e
       false)))
 
+(defn -list-subjects [config]
+  (-> (http/get
+       (str (:base-url config) "/subjects")
+       {:basic-auth   [(:username config) (:password config)]
+        :as           :json
+        :conn-timeout 1000})
+      :body))
+
 (defn- -post-schema
   [config subject schema]
   ;; TODO better url creation
@@ -104,6 +112,7 @@
   "A Confluent Schema Registry client."
   (get-config  [this] "Returns the Schema Registry configuration map.")
   (healthy? [this] "Can the Schema Registry be contacted, and do its responses look right?")
+  (list-subjects [this] "List all subjects.")
   (post-schema  [this subject schema] "Posts an Avro Schema. Return the Schema Id.")
   (get-schema-by-id [this id] "Fetches a Schema by Schema Id.")
   (get-latest-schema-by-subject [this subject] "Gets the latest Schema for a given subject."))
@@ -112,6 +121,7 @@
   SchemaRegistry
   (healthy? [this] (-healthy? config))
   (get-config [_] (-get-config config))
+  (list-subjects [_] (-list-subjects config))
 
   (post-schema
     [_ subject schema]
@@ -139,10 +149,11 @@
         :args (s/cat :config ::config))
 (defn ->schema-registry-client
   "Returns an instance of the schema-registry-client"
-  [config]
-  (s/assert ::config config)
-  (let [memoized-fns
-        {:post-schema                  (memo -post-schema)
-         :get-schema-by-id             (memo -get-schema-by-id)
-         :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
-    (->SchemaRegistryImpl memoized-fns config)))
+  (^kafka_avro_confluent.schema_registry_client.SchemaRegistry
+   [config]
+   (s/assert ::config config)
+   (let [memoized-fns
+         {:post-schema                  (memo -post-schema)
+          :get-schema-by-id             (memo -get-schema-by-id)
+          :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
+     (->SchemaRegistryImpl memoized-fns config))))
