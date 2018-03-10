@@ -1,4 +1,7 @@
 (ns kafka-avro-confluent.serializers
+  "Avro serializers that post schemas to the Confluent Schema Registry.
+
+  They all implement org.apache.kafka.common.serialization.Serializer"
   (:require [abracad.avro :as avro]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])
@@ -50,4 +53,3 @@
   (^kafka_avro_confluent.serializers.AvroSerializer [schema-registry serializer-type schema]
    {:pre [(#{:key :value} serializer-type)]}
    (AvroSerializer. schema-registry serializer-type schema)))
-

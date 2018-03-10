@@ -1,4 +1,7 @@
 (ns kafka-avro-confluent.deserializers
+  "Avro deserializers that fetch schemas from the Confluent Schema Registry.
+
+  They all implement org.apache.kafka.common.serialization.Deserializer"
   (:require [abracad.avro :as avro]
             [kafka-avro-confluent.magic :as magic]
             [kafka-avro-confluent.schema-registry-client :as registry])

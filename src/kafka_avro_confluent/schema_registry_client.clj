@@ -1,4 +1,5 @@
 (ns kafka-avro-confluent.schema-registry-client
+  "A client for the Confluent Schema Registry."
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [abracad.avro :as avro]

@@ -1,4 +1,9 @@
 (ns kafka-avro-confluent.serde
+  "Avro Serde that:
+  - posts schemas to the Schema Registry when serializing;
+  - fetches schemas from the Schema Registry when deserializing.
+
+  Implements org.apache.kafka.common.serialization.Serde"
   (:require [abracad.avro :as avro]
             [kafka-avro-confluent.schema-registry-client :as sr]
             [kafka-avro-confluent.deserializers :as des]
@@ -12,10 +17,11 @@
  :state state
  :init init
  :main false
- :methods [[schemaRegistryClient [] kafka_avro_confluent.schema_registry_client.SchemaRegistry]
+ :methods [[schemaRegistryClient []
+            kafka_avro_confluent.schema_registry_client.SchemaRegistry]
            [getLocation [] String]])
 
-(defn -init [] "Default, no arg constructor." [[] (atom nil)])
+(defn -init "Default, no arg constructor." [] [[] (atom nil)])
 
 (s/def ::schema-registry-client ::sr/config)
 (s/def ::avro-schema some?)
@@ -40,7 +46,7 @@
              :serializer             s
              :deserializer           d})))
 
-(defn get-field [this key] (@(.state this) key))
+(defn- get-field [this key] (@(.state this) key))
 (defn -serializer [this] (get-field this :serializer))
 (defn -deserializer [this] (get-field this :deserializer))
 (defn -schemaRegistryClient [this] (get-field this :schema-registry-client))
