@@ -1,8 +1,8 @@
-(defproject ovotech/kafka-avro-confluent "0.9.1-SNAPSHOT"
+(defproject parkside-securities/kafka-avro-confluent "0.9.1-SNAPSHOT"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
-  :url "http://github.com/ovotech/kafka-avro-confluent"
+  :url "http://github.com/parkside-securities/kafka-avro-confluent"
 
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
