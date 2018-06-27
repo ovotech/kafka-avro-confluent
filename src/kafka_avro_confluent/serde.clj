@@ -31,14 +31,11 @@
   (s/keys :req-un [::schema-registry-client ::serializer]))
 
 (defn -configure [this m isKey]
-  (let [{serializer-conf      :serializer
-         schema-registry-conf :schema-registry-client
-         :as                  config}
-        (keywordize-keys m)
+  (let [{:keys [serializer schema-registry-client] :as config} (keywordize-keys (into {} m))
         _               (s/assert ::config config)
         serializer-type (if isKey :key :value)
-        avro-schema     (:avro-schema serializer-conf)
-        sr              (sr/->schema-registry-client schema-registry-conf)
+        avro-schema     (:avro-schema serializer)
+        sr              (sr/->schema-registry-client schema-registry-client)
         s               (ser/->avro-serializer sr serializer-type avro-schema)
         d               (des/->avro-deserializer sr)]
     (reset! (.state this)
