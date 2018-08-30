@@ -9,7 +9,7 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/core.memoize "0.7.1"]
-                 [com.damballa/abracad "0.4.13"]
+                 [parkside-securities/abracad "0.4.15-SNAPSHOT"]
                  [cheshire "5.8.0"]
 
                  [clj-http "3.8.0"]
