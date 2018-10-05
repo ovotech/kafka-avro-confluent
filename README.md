@@ -16,8 +16,7 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
   (:require [clojure.walk :as walk]
             [kafka-avro-confluent.deserializers :as des]
             [kafka-avro-confluent.schema-registry-client :as reg]
-            [kafka-avro-confluent.serializers :as ser])
-  (:import kafka_avro_confluent.Serde))
+            [kafka-avro-confluent.serializers :as ser]))
 
 ;; initialise the Confluent Schema Registry client:
 (def schema-registry
@@ -54,17 +53,6 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 ;; e.g. (org.apache.kafka.clients.producer.KafkaProducer. key-serializer
 ;;                                                        value-serializer)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; # Serde
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; implements org.apache.kafka.common.serialization.Serde
-
-(def serde
-  (let [isKey  false
-        config (walk/stringify-keys
-                {:schema-registry-client {:base-url "http://localhost:8081"}
-                 :serializer             {:avro-schema {:type "string"}}})]
-    (doto (Serde.) (.configure config isKey))))
 ```
 
 
