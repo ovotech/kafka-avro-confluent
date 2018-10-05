@@ -38,7 +38,7 @@
 
 (defn ->avro-serializer
   "Avro serializer for Apache Kafka using Confluent's Schema Registry.
-  Use for serializing Kafka keys values.
+  Use for serializing Kafka keys and values.
   Values will be serialized according to the provided schema.
 
   `serializer-type` will be used for determining the suffix (`-key` or `-value`) used for registering
