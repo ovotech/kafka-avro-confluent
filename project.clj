@@ -19,7 +19,6 @@
                  [org.clojure/tools.logging "0.4.0"]]
 
   :aot [kafka-avro-confluent.serializers
-        kafka-avro-confluent.serde
         kafka-avro-confluent.deserializers
         kafka-avro-confluent.v2.serializer
         kafka-avro-confluent.v2.deserializer]
