@@ -47,12 +47,12 @@
 (s/fdef -configure
         :args (s/cat :this some?
                      :config :serde/config
-                     :isKey boolean?))
-(defn -configure [this config isKey]
-  (let [{schema-registry-config :schema-registry/config
-         :as                    config} (s/conform :serde/config config)]
-    (reset! (.state this)
-            {:schema-registry-client (sr/->schema-registry-client schema-registry-config)})))
+                     :_key? boolean?))
+(defn -configure [this config _key?]
+  (reset! (.state this)
+          {:schema-registry-client (->> config
+                                        (s/conform :serde/config)
+                                        sr/->schema-registry-client)}))
 
 (s/fdef -deserialize
         :args (s/cat :this some?
@@ -69,5 +69,5 @@
   ^kafka_avro_confluent.v2.AvroDeserializer
   [config]
   (doto (kafka_avro_confluent.v2.AvroDeserializer.)
-    ;; NOTE .. the isKey is actually ignored in the deserializer;
+    ;; NOTE .. `key?` is ignored in the deserializer;
     (.configure config false)))
