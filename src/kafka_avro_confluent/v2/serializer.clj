@@ -49,8 +49,6 @@
 
 (defn- get-field [this key] (@(.state this) key))
 
-;; TODO additional arities
-;; https://stackoverflow.com/questions/18780071/clojure-multiple-constructors-using-gen-class
 (defn -init "Default, no arg constructor." [] [[] (atom nil)])
 
 (s/fdef -configure
