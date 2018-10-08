@@ -1,19 +1,28 @@
 (ns kafka-avro-confluent.v2.specs
   (:require [clojure.spec.alpha :as s]
-            [clojure.walk :as w]
-            [kafka-avro-confluent.schema-registry-client :as sr]))
+            [clojure.string :as string]
+            [clojure.walk :as w]))
 
-(s/def ::schema-registry ::sr/config)
-(s/def ::config
+(s/def ::non-blank-string (s/and string? (complement string/blank?)))
+
+(s/def ::base-url ::non-blank-string)
+(s/def ::username ::non-blank-string)
+(s/def ::password ::non-blank-string)
+
+(s/def :schema-registry/config
+  (s/keys :req-un [::base-url]
+          :opt-un [::username ::password]))
+
+(s/def :serde/config
   (s/and (s/conformer #(try
                          (->> %
                               (into {})
                               w/keywordize-keys)
                          (catch Exception ex
                            :clojure.spec.alpha/invalid)))
-         (s/keys :req-un [::schema-registry])))
+         (s/keys :req [:schema-registry/config])))
 
-(s/def ::schema any?)
-(s/def ::value any?)
+(s/def :avro-record/schema any?)
+(s/def :avro-record/value any?)
 (s/def ::avro-record
   (s/keys :req-un [::schema ::value]))

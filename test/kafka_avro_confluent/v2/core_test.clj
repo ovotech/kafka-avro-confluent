@@ -1,7 +1,7 @@
 (ns kafka-avro-confluent.v2.core-test
   (:require [clojure.test :refer :all]
             [kafka-avro-confluent.v2.deserializer :as sut-des]
-            [kafka-avro-confluent.schema-registry-client :as sut-reg]
+            [kafka-avro-confluent.v2.schema-registry-client :as sut-reg]
             [kafka-avro-confluent.v2.serializer :as sut-ser]
             [zookareg.core :as zkr]
             [clojure.spec.alpha :as s]
@@ -23,10 +23,10 @@
   (str (UUID/randomUUID)))
 
 (def config
-  {:schema-registry {:base-url "http://localhost:8081"}})
+  {:schema-registry/config {:base-url "http://localhost:8081"}})
 
 (def schema-registry-client
-  (sut-reg/->schema-registry-client (:schema-registry config)))
+  (sut-reg/->schema-registry-client (:schema-registry/config config)))
 
 (deftest avro-serde
   (testing "Can round-trip"
