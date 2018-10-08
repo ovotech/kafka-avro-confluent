@@ -8,11 +8,12 @@
   (:require [abracad.avro :as avro]
             [clojure.spec.alpha :as s]
             [kafka-avro-confluent.magic :as magic]
-            [kafka-avro-confluent.schema-registry-client :as sr]
+            [kafka-avro-confluent.v2.schema-registry-client :as sr]
             [kafka-avro-confluent.v2.specs :as ks])
   (:import java.io.ByteArrayOutputStream
            java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Serializer))
+(require 'kafka-avro-confluent.v2.specs)
 
 (defn- #^"[B" schema-id->bytes [schema-id]
   (-> (ByteBuffer/allocate 4)
@@ -53,13 +54,13 @@
 
 (s/fdef -configure
         :args (s/cat :this some?
-                     :config ::ks/config
+                     :config :serde/config
                      :isKey boolean?))
 (defn -configure [this config isKey]
-  (let [{:keys [schema-registry]
-         :as   config} (s/conform ::ks/config config)]
+  (let [{schema-registry-config :schema-registry/config
+         :as                    config} (s/conform :serde/config config)]
     (reset! (.state this)
-            {:schema-registry-client (sr/->schema-registry-client schema-registry)
+            {:schema-registry-client (sr/->schema-registry-client schema-registry-config)
              :isKey                  isKey})))
 
 (s/fdef -serialize
