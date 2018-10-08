@@ -31,12 +31,11 @@
   (testing "Can round-trip"
     (let [serializer   (sut-ser/->avro-serializer config)
           deserializer (sut-des/->avro-deserializer config)
-          topic (dummy-topic)]
+          topic        (dummy-topic)]
       (is (= dummy-data
              (->> {:value dummy-data :schema dummy-schema}
                   (.serialize serializer topic)
                   (.deserialize deserializer topic))))
-
       (testing "uses :value as default `serializer-type`"
         (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                                   (str topic "-value")))))))
@@ -49,6 +48,5 @@
            (->> {:value dummy-data :schema dummy-schema}
                 (.serialize serializer topic)
                 (.deserialize deserializer topic))))
-
     (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                               (str topic "-key")))))
