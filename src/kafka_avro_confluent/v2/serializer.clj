@@ -28,10 +28,10 @@
     (.toByteArray out)))
 
 (defn- -serialize*
-  [schema-registry isKey topic schema data]
+  [schema-registry key? topic schema data]
   (when data
     (let [avro-schema      (avro/parse-schema schema)
-          subject          (format "%s-%s" topic (if isKey "key" "value"))
+          subject          (format "%s-%s" topic (if key? "key" "value"))
           schema-id        (sr/post-schema schema-registry subject schema)
           serialized-bytes (->serialized-bytes schema-id avro-schema data)]
       serialized-bytes)))
@@ -55,13 +55,13 @@
 (s/fdef -configure
         :args (s/cat :this some?
                      :config :serde/config
-                     :isKey boolean?))
-(defn -configure [this config isKey]
-  (let [{schema-registry-config :schema-registry/config
-         :as                    config} (s/conform :serde/config config)]
-    (reset! (.state this)
-            {:schema-registry-client (sr/->schema-registry-client schema-registry-config)
-             :isKey                  isKey})))
+                     :key? boolean?))
+(defn -configure [this config key?]
+  (reset! (.state this)
+          {:schema-registry-client (->> config
+                                        (s/conform :serde/config)
+                                        sr/->schema-registry-client)
+           :key?                  key?}))
 
 (s/fdef -serialize
         :args (s/cat :this some?
@@ -69,7 +69,7 @@
                      :avro-record ::ks/avro-record))
 (defn -serialize [this topic avro-record]
   (-serialize* (get-field this :schema-registry-client)
-               (get-field this :isKey)
+               (get-field this :key?)
                topic
                (:schema avro-record)
                (:value avro-record)))
@@ -80,6 +80,6 @@
 (defn ->avro-serializer
   "Avro serializer for Apache Kafka using Confluent's Schema Registry."
   ^kafka_avro_confluent.v2.AvroSerializer
-  [config isKey]
+  [config & {:keys [key?]}]
   (doto (kafka_avro_confluent.v2.AvroSerializer.)
-    (.configure config isKey)))
+    (.configure config (boolean key?))))

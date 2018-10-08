@@ -31,10 +31,11 @@
   (with-out-str (pprint/pprint x)))
 
 (defn- -get-config
-  [config]
+  [{:schema-registry/keys [base-url username password]
+    :as                   _config}]
   (-> (http/get
-       (str (:base-url config) "/config")
-       {:basic-auth   [(:username config) (:password config)]
+       (str base-url "/config")
+       {:basic-auth   [username password]
         :as           :json
         :conn-timeout 1000})
       :body))
@@ -47,30 +48,33 @@
     (catch Exception e
       false)))
 
-(defn -list-subjects [config]
+(defn -list-subjects
+  [{:schema-registry/keys [base-url username password]
+    :as                   _config}]
   (-> (http/get
-       (str (:base-url config) "/subjects")
-       {:basic-auth   [(:username config) (:password config)]
+       (str base-url "/subjects")
+       {:basic-auth   [username password]
         :as           :json
         :conn-timeout 1000})
       :body))
 
 (defn- -post-schema
-  [config subject schema]
+  [{:schema-registry/keys [base-url username password]
+    :as                   _config}
+   subject
+   schema]
   ;; TODO better url creation
-  (let [url  (str (:base-url config)
+  (let [url  (str base-url
                   "/subjects/"
                   subject
                   "/versions")
         body (schema->json schema)]
     (try
       (-> (http/post url
-                     {:basic-auth [(:username config)
-                                   (:password config)]
-                      :content-type
-                      "application/vnd.schemaregistry.v1+json"
-                      :as         :json
-                      :body       body})
+                     {:basic-auth   [username password]
+                      :content-type "application/vnd.schemaregistry.v1+json"
+                      :as           :json
+                      :body         body})
           (get-in [:body :id]))
       (catch Exception ex
         (let [exi (merge-ex-data ex {:post-url  url
@@ -82,27 +86,29 @@
           (throw exi))))))
 
 (defn- -get-schema-by-id
-  [config id]
-  (let [url  (str (:base-url config) "/schemas/ids/" id)
+  [{:schema-registry/keys [base-url username password]
+    :as                   _config}
+   id]
+  (let [url  (str base-url "/schemas/ids/" id)
         resp (http/get url
                        {:as         :json
-                        :basic-auth [(:username config)
-                                     (:password config)]})]
+                        :basic-auth [username password]})]
     (-> resp
         :body
         :schema
         (json/parse-string true))))
 
 (defn- -get-latest-schema-by-subject
-  [config subject]
-  (let [url  (str (:base-url config)
+  [{:schema-registry/keys [base-url username password]
+    :as                   _config}
+   subject]
+  (let [url  (str base-url
                   "/subjects/"
                   subject
                   "/versions/latest")
         resp (http/get url
                        {:as         :json
-                        :basic-auth [(:username config)
-                                     (:password config)]})]
+                        :basic-auth [username password]})]
     (-> resp
         :body
         :schema
@@ -136,12 +142,12 @@
     ((:get-schema-by-id memoized-fns) config id)))
 
 (s/fdef ->schema-registry-client
-        :args (s/cat :config :schema-registry/config))
+        :args (s/cat :config :serde/config))
 (defn ->schema-registry-client
   "Returns an instance of the schema-registry-client"
   (^kafka_avro_confluent.schema_registry_client.SchemaRegistry
    [config]
-   (s/assert :schema-registry/config config)
+   (s/assert :serde/config config)
    (let [memoized-fns
          {:post-schema                  (memo -post-schema)
           :get-schema-by-id             (memo -get-schema-by-id)

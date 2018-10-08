@@ -1,11 +1,10 @@
-(ns kafka-avro-confluent.v2.core-test
-  (:require [clojure.test :refer :all]
+(ns ^:eftest/synchronized kafka-avro-confluent.v2.core-test
+  (:require [clojure.spec.test.alpha :as stest]
+            [clojure.test :refer :all]
             [kafka-avro-confluent.v2.deserializer :as sut-des]
             [kafka-avro-confluent.v2.schema-registry-client :as sut-reg]
             [kafka-avro-confluent.v2.serializer :as sut-ser]
-            [zookareg.core :as zkr]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest])
+            [zookareg.core :as zkr])
   (:import java.util.UUID))
 
 (stest/instrument)
@@ -23,14 +22,14 @@
   (str (UUID/randomUUID)))
 
 (def config
-  {:schema-registry/config {:base-url "http://localhost:8081"}})
+  {:schema-registry/base-url "http://localhost:8081"})
 
 (def schema-registry-client
-  (sut-reg/->schema-registry-client (:schema-registry/config config)))
+  (sut-reg/->schema-registry-client config))
 
 (deftest avro-serde
   (testing "Can round-trip"
-    (let [serializer   (sut-ser/->avro-serializer config false)
+    (let [serializer   (sut-ser/->avro-serializer config)
           deserializer (sut-des/->avro-deserializer config)
           topic (dummy-topic)]
       (is (= dummy-data
@@ -42,8 +41,8 @@
         (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                                   (str topic "-value")))))))
 
-(deftest avro-serde-with-isKey=true-test
-  (let [serializer   (sut-ser/->avro-serializer config true)
+(deftest avro-serde-with-key?=true-test
+  (let [serializer   (sut-ser/->avro-serializer config :key? true)
         deserializer (sut-des/->avro-deserializer config)
         topic        (dummy-topic)]
     (is (= dummy-data
