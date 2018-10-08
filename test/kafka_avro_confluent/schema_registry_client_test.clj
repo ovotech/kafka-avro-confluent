@@ -22,12 +22,12 @@
   (testing "blows up when invalid config is passed"
     (s/check-asserts true)
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
-                          #"Spec assertion failed"
+                          #"did not conform to spec"
                           (sut/->schema-registry-client {})))))
 
 (deftest healthy?-test
   (testing "is healthy when all the deps are up"
-    (zkr/with-zookareg zkr/default-config
+    (zkr/with-zookareg (zkr/read-default-config)
       (let [c (sut/->schema-registry-client
                {:base-url "http://localhost:8081"})]
         (is (sut/healthy? c)))))
@@ -39,7 +39,7 @@
 
 (deftest get-config-test
   (testing "can get config"
-    (zkr/with-zookareg zkr/default-config
+    (zkr/with-zookareg (zkr/read-default-config)
 
       (let [c (sut/->schema-registry-client
                {:base-url "http://localhost:8081"})
@@ -50,7 +50,7 @@
   (testing "can list subjects"
     (let [sr (sut/->schema-registry-client
               {:base-url "http://localhost:8081"})]
-      (zkr/with-zookareg zkr/default-config
+      (zkr/with-zookareg (zkr/read-default-config)
         (let [subjects (sut/list-subjects sr)]
           (is (empty? subjects) "initially, subjects should be empty"))
         (testing "posting to a subject and then retrieving subj liist"
@@ -62,7 +62,7 @@
             (is (= exp-subjects act-subjects))))))))
 
 (deftest posting-and-getting-schemas
-  (zkr/with-zookareg zkr/default-config
+  (zkr/with-zookareg (zkr/read-default-config)
     (let [c      (sut/->schema-registry-client
                   {:base-url "http://localhost:8081"})
           schema (->dummy-schema "Foo")
@@ -75,7 +75,7 @@
              (sut/get-schema-by-id c post-resp-schema-id))))))
 
 (defn roundtrip-first-schema-post [schema-name]
-  (zkr/with-zookareg zkr/default-config
+  (zkr/with-zookareg (zkr/read-default-config)
     (let [c                  (sut/->schema-registry-client
                               {:base-url "http://localhost:8081"})
           schema             (->dummy-schema schema-name)

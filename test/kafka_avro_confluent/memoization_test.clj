@@ -18,7 +18,7 @@
 
 (deftest avro-serde
 
-  (zkr/with-zookareg zkr/default-config
+  (zkr/with-zookareg (zkr/read-default-config)
     (let [schema-registry (sut-reg/->schema-registry-client {:base-url "http://localhost:8081"})
           serializer      (sut-ser/->avro-serializer schema-registry
                                                      (->dummy-schema :FOO))
@@ -30,7 +30,7 @@
                   (.serialize serializer topic)
                   (.deserialize deserializer topic))))))
 
-  (zkr/with-zookareg zkr/default-config
+  (zkr/with-zookareg (zkr/read-default-config)
     (let [schema-registry (sut-reg/->schema-registry-client {:base-url "http://localhost:8081"})
           serializer      (sut-ser/->avro-serializer schema-registry
                                                      (->dummy-schema :BAR))

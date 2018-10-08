@@ -25,7 +25,7 @@
 
   :repositories {"confluent" "https://packages.confluent.io/maven"}
 
-  :profiles {:dev {:dependencies   [[vise890/zookareg "1.0.1-1"]
+  :profiles {:dev {:dependencies   [[vise890/zookareg "1.0.2-2"]
                                     [ch.qos.logback/logback-classic "1.2.3"]
                                     [ch.qos.logback/logback-core "1.2.3"]]
                    :resource-paths ["dev/resources" "test/resources"]}
