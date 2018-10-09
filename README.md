@@ -1,4 +1,4 @@
-# kafka-avro-confluent
+# kafka-avro-confluent [![CircleCI](https://circleci.com/gh/ovotech/kafka-avro-confluent.svg?style=svg)](https://circleci.com/gh/ovotech/kafka-avro-confluent)
 
 Kafka De/Serializer using avro and Confluent's Schema Registry
 
