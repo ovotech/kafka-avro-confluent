@@ -54,12 +54,12 @@
 
 (s/fdef -configure
         :args (s/cat :this some?
-                     :config :serde/config
+                     :config :kafka.serde/config
                      :key? boolean?))
 (defn -configure [this config key?]
   (reset! (.state this)
           {:schema-registry-client (->> config
-                                        (s/conform :serde/config)
+                                        (s/conform :kafka.serde/config)
                                         sr/->schema-registry-client)
            :key?                  key?}))
 

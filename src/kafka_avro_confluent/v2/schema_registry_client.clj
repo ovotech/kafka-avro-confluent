@@ -142,12 +142,12 @@
     ((:get-schema-by-id memoized-fns) config id)))
 
 (s/fdef ->schema-registry-client
-        :args (s/cat :config :serde/config))
+        :args (s/cat :config :kafka.serde/config))
 (defn ->schema-registry-client
   "Returns an instance of the schema-registry-client"
   (^kafka_avro_confluent.schema_registry_client.SchemaRegistry
    [config]
-   (s/assert :serde/config config)
+   (s/assert :kafka.serde/config config)
    (let [memoized-fns
          {:post-schema                  (memo -post-schema)
           :get-schema-by-id             (memo -get-schema-by-id)

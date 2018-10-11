@@ -9,7 +9,7 @@
 (s/def :schema-registry/username ::non-blank-string)
 (s/def :schema-registry/password ::non-blank-string)
 
-(s/def :serde/config
+(s/def :kafka.serde/config
   (s/and (s/conformer #(try
                          (->> %
                               (into {})
