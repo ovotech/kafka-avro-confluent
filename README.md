@@ -47,6 +47,21 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 ```
 
 
+## Versions
+
+The versions use this format:
+
+```bash
+${kafka_version}-${build_number}
+```
+
+For example:
+
+```ruby
+0.10.0-4 # Kafka v = 0.10.0, kafka-avro-confluent build = 4
+1.0.1-1  # Kafka v = 1.0.1 , kafka-avro-confluent build = 1
+```
+
 ## License
 
 Copyright © 2017 OVO Energy Ltd.
