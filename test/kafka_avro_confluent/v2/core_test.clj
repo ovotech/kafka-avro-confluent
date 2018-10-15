@@ -1,5 +1,6 @@
 (ns ^:eftest/synchronized kafka-avro-confluent.v2.core-test
-  (:require [clojure.spec.test.alpha :as stest]
+  (:require [abracad.avro :as avro]
+            [clojure.spec.test.alpha :as stest]
             [clojure.test :refer :all]
             [kafka-avro-confluent.v2.deserializer :as sut-des]
             [kafka-avro-confluent.v2.schema-registry-client :as sut-reg]
@@ -50,3 +51,17 @@
                 (.deserialize deserializer topic))))
     (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                               (str topic "-key")))))
+
+(deftest avro-serde-with-parsed-avro-schema
+  (testing "Can round-trip"
+    (let [serializer   (sut-ser/->avro-serializer config)
+          deserializer (sut-des/->avro-deserializer config)
+          topic        (dummy-topic)
+          schema       (avro/parse-schema dummy-schema)]
+      (is (= dummy-data
+             (->> {:value dummy-data :schema schema}
+                  (.serialize serializer topic)
+                  (.deserialize deserializer topic))))
+      (testing "uses :value as default `serializer-type`"
+        (is (sut-reg/get-latest-schema-by-subject schema-registry-client
+                                                  (str topic "-value")))))))

@@ -1,5 +1,6 @@
 (ns kafka-avro-confluent.v2.schema-registry-client
-  (:require [cheshire.core :as json]
+  (:require [abracad.avro :as avro]
+            [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.core.memoize :refer [memo]]
             [clojure.pprint :as pprint]
@@ -11,7 +12,9 @@
 
 (defn- schema->json
   [schema]
-  (let [schema-str (json/generate-string schema)]
+  (let [schema-str (if (avro/schema? schema)
+                     (str schema)
+                     (json/generate-string schema))]
     (json/generate-string {"schema" schema-str})))
 
 (defn- merge-ex-data
