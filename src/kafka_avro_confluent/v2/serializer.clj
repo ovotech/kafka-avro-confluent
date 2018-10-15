@@ -28,11 +28,10 @@
     (.toByteArray out)))
 
 (defn- -serialize*
-  [schema-registry key? topic schema data]
+  [schema-registry key? topic avro-schema data]
   (when data
-    (let [avro-schema      (avro/parse-schema schema)
-          subject          (format "%s-%s" topic (if key? "key" "value"))
-          schema-id        (sr/post-schema schema-registry subject schema)
+    (let [subject          (format "%s-%s" topic (if key? "key" "value"))
+          schema-id        (sr/post-schema schema-registry subject avro-schema)
           serialized-bytes (->serialized-bytes schema-id avro-schema data)]
       serialized-bytes)))
 
