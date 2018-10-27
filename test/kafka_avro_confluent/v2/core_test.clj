@@ -28,6 +28,26 @@
 (def schema-registry-client
   (sut-reg/->schema-registry-client config))
 
+(deftest init-close-test
+  (testing "can initialize and close"
+    (with-open [ser (kafka_avro_confluent.v2.AvroSerializer.)
+                des (kafka_avro_confluent.v2.AvroDeserializer.)]
+      (is ser)
+      (is des))))
+
+(deftest raw-confluent-config-test
+  ;; https://docs.confluent.io/current/schema-registry/docs/serializer-formatter.html
+  (testing "supports official config keys"
+    (let [config {:schema.registry.url           "http://localhost:8081,http://foohost.com:8081"
+                  :basic.auth.credentials.source "USER_INFO"
+                  :basic.auth.user.info          "user:pass"}]
+      (with-open [ser (kafka_avro_confluent.v2.AvroSerializer.)
+                  des (kafka_avro_confluent.v2.AvroDeserializer.)]
+        (.configure ser config false)
+        (.configure des config false)
+        (is ser)
+        (is des)))))
+
 (deftest avro-serde
   (testing "Can round-trip"
     (let [serializer   (sut-ser/->avro-serializer config)
@@ -40,6 +60,7 @@
       (testing "uses :value as default `serializer-type`"
         (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                                   (str topic "-value")))))))
+
 
 (deftest avro-serde-with-key?=true-test
   (let [serializer   (sut-ser/->avro-serializer config :key? true)

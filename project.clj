@@ -8,18 +8,23 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/core.memoize "0.7.1"]
-                 [com.damballa/abracad "0.4.13"]
+
+                 [org.apache.kafka/kafka-clients "1.1.1" :exclusions [org.scala-lang/scala-library]]
+
+                 ;; v2
+                 [org.akvo/kfk.avro-bridge "1.5.0b144984c335ea011dad0a891409710f2d0b75a0"]
+                 [io.confluent/kafka-avro-serializer "5.0.0"]
+
+                 ;; legacy
                  [cheshire "5.8.1"]
-
                  [clj-http "3.9.1"]
-
-                 [org.apache.kafka/kafka-clients "1.1.1"
-                  :exclusions [org.scala-lang/scala-library]]
+                 [com.damballa/abracad "0.4.13"]
+                 [org.clojure/core.memoize "0.7.1"]
                  [org.clojure/tools.logging "0.4.1"]]
 
   :aot [kafka-avro-confluent.serializers
         kafka-avro-confluent.deserializers
+        kafka-avro-confluent.v2.common
         kafka-avro-confluent.v2.serializer
         kafka-avro-confluent.v2.deserializer]
 
