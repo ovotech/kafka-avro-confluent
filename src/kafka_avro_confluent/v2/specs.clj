@@ -9,16 +9,22 @@
 (s/def :schema-registry/username ::non-blank-string)
 (s/def :schema-registry/password ::non-blank-string)
 
+(s/def :confluent/schema.registry.url ::non-blank-string)
+(s/def :confluent/basic.auth.credentials.source ::non-blank-string)
+(s/def :confluent/basic.auth.user.info ::non-blank-string)
+
 (s/def :kafka.serde/config
   (s/and (s/conformer #(try
-                         (->> %
-                              (into {})
-                              w/keywordize-keys)
+                         (w/keywordize-keys %)
                          (catch Exception ex
                            :clojure.spec.alpha/invalid)))
-         (s/keys :req [:schema-registry/base-url]
-                 :opt [:schema-registry/username
-                       :schema-registry/password])))
+         (s/or :clj (s/keys :req [:schema-registry/base-url]
+                            :opt [:schema-registry/username
+                                  :schema-registry/password])
+               :confluent
+               (s/keys :req-un [:confluent/schema.registry.url]
+                       :opt-un [:confluent/basic.auth.credentials.source
+                                :confluent/basic.auth.user.info]))))
 
 (s/def :avro-record/schema any?)
 (s/def :avro-record/value any?)
