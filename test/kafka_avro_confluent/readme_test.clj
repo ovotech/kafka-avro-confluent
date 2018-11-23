@@ -19,6 +19,10 @@
 
 (des/->avro-deserializer schema-registry)
 
+;; Without using logical types
+(binding [abracad.avro.conversion/*use-logical-types* false]
+  (des/->avro-deserializer schema-registry))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; # Serializer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

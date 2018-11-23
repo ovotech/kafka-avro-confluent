@@ -4,16 +4,20 @@
             [kafka-avro-confluent.schema-registry-client :as sut-reg]
             [kafka-avro-confluent.serializers :as sut-ser]
             [zookareg.core :as zkr])
-  (:import java.util.UUID))
+  (:import java.util.UUID
+           (java.time LocalDate)))
 
 (use-fixtures :once zkr/with-zookareg-fn)
 
 (def dummy-schema {:type   "record"
                    :name   "Foo"
                    :fields [{:name "fooId"
-                             :type "string"}]})
+                             :type "string"}
+                            {:name "fooDate"
+                             :type {:type :int
+                                    :logicalType :date}}]})
 
-(def dummy-data {:fooId "42"})
+(def dummy-data {:fooId "42" :fooDate (LocalDate/of 2018 11 23)})
 
 (defn dummy-topic []
   (str (UUID/randomUUID)))
