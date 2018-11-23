@@ -2,6 +2,16 @@
 
 Kafka De/Serializer using avro and Confluent's Schema Registry
 
+## Migrating from 1.1.1-4 -> 1.1.1-5+
+
+1.1.1-5 adds support for logical types. This support is automatic and will be used both in serialisation and deserialisation.
+If you need to deserialise to the underlying primitive types you will need to disable logical type conversion
+at the point of creating your deserialiser i.e.
+
+```clojure
+(binding [abracad.avro.conversion/*use-logical-types* false]
+  (des/->avro-deserializer schema-registry))
+```
 
 ## Usage
 
@@ -29,6 +39,10 @@ Kafka De/Serializer using avro and Confluent's Schema Registry
 ;; implements org.apache.kafka.common.serialization.Deserializer
 
 (des/->avro-deserializer config)
+
+;; Without using logical types
+(binding [abracad.avro.conversion/*use-logical-types* false]
+  (des/->avro-deserializer schema-registry))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; # Serializer

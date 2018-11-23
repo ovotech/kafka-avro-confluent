@@ -2,7 +2,6 @@
   "A client for the Confluent Schema Registry."
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as string]
-            [abracad.avro :as avro]
             [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.core.memoize :refer [memo]]

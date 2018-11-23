@@ -4,8 +4,7 @@
   They all implement org.apache.kafka.common.serialization.Serializer"
   (:require [abracad.avro :as avro]
             [kafka-avro-confluent.magic :as magic]
-            [kafka-avro-confluent.schema-registry-client :as registry]
-            [clojure.spec.alpha :as s])
+            [kafka-avro-confluent.schema-registry-client :as registry])
   (:import java.io.ByteArrayOutputStream
            java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Serializer))
