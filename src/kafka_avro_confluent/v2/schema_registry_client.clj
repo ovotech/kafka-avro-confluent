@@ -17,18 +17,6 @@
                      (json/generate-string schema))]
     (json/generate-string {"schema" schema-str})))
 
-(defn- merge-ex-data
-  [ex data]
-  (condp instance? ex
-    ExceptionInfo
-    (ExceptionInfo. (.getMessage ex)
-                    (merge (ex-data ex)
-                           data)
-                    ex)
-    Exception
-    (ExceptionInfo. (.getMessage ex)
-                    data
-                    ex)))
 (defn- pretty
   [x]
   (with-out-str (pprint/pprint x)))
@@ -80,9 +68,10 @@
                       :body         body})
           (get-in [:body :id]))
       (catch Exception ex
-        (let [exi (merge-ex-data ex {:post-url  url
-                                     :post-body body
-                                     :schema    schema})]
+        (let [exi (ex-info "Post to schema registry failed!"
+                           {:post-url  url
+                            :schema    schema}
+                           ex)]
           (log/error ex
                      "Post to schema registry failed!"
                      (pretty (ex-data exi)))

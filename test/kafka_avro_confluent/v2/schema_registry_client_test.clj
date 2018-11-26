@@ -61,7 +61,7 @@
                 act-subjects (sut/list-subjects sr)]
             (is (= exp-subjects act-subjects))))))))
 
-(deftest posting-and-getting-schemas
+(deftest posting-and-getting-schemas-happy
   (zkr/with-zookareg (zkr/read-default-config)
     (let [c      (sut/->schema-registry-client
                   {:schema-registry/base-url "http://localhost:8081"})
@@ -73,6 +73,21 @@
              (sut/get-latest-schema-by-subject c "subject")))
       (is (= schema
              (sut/get-schema-by-id c post-resp-schema-id))))))
+
+(deftest posting-and-getting-schemas-sad
+  (zkr/with-zookareg (zkr/read-default-config)
+    (let [c                    (sut/->schema-registry-client
+                                {:schema-registry/base-url "http://localhost:8081"})
+          schema1              {:type "record", :name "Foo", :fields [{:name "fooId", :type "string"}]}
+          schema2              {:type "record", :name "Foo", :fields [{:name "fooId", :type "long"}]}
+          post-resp-schema1-id (sut/post-schema c "subject" schema1)]
+      (is (integer? post-resp-schema1-id))
+      (try
+        (sut/post-schema c "subject" schema2)
+        (is false "should have not gotten here")
+        (catch Exception ex
+          (println (ex-data ex))
+          (is (ex-data ex)))))))
 
 (defn roundtrip-first-schema-post [schema-name]
   (zkr/with-zookareg (zkr/read-default-config)
