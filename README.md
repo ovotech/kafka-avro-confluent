@@ -17,7 +17,7 @@ at the point of creating your deserialiser i.e.
 
 [![Clojars Project](https://img.shields.io/clojars/v/ovotech/kafka-avro-confluent.svg)](https://clojars.org/ovotech/kafka-avro-confluent)
 ```
-[ovotech/kafka-avro-confluent "0.10.0"]
+[ovotech/kafka-avro-confluent "1.1.1-6"]
 ```
 
 
