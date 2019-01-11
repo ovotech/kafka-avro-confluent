@@ -1,4 +1,4 @@
-(defproject ovotech/kafka-avro-confluent "1.1.1-6"
+(defproject ovotech/kafka-avro-confluent "2.0.1-1"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
@@ -14,7 +14,7 @@
 
                  [clj-http "3.9.1"]
 
-                 [org.apache.kafka/kafka-clients "1.1.1"
+                 [org.apache.kafka/kafka-clients "2.0.1"
                   :exclusions [org.scala-lang/scala-library]]
                  [org.clojure/tools.logging "0.4.1"]]
 
@@ -25,7 +25,7 @@
 
   :repositories {"confluent" "https://packages.confluent.io/maven"}
 
-  :profiles {:dev {:dependencies   [[vise890/zookareg "1.1.1-1"]
+  :profiles {:dev {:dependencies   [[vise890/zookareg "2.0.1-1"]
                                     [ch.qos.logback/logback-classic "1.2.3"]
                                     [ch.qos.logback/logback-core "1.2.3"]]
                    :resource-paths ["dev/resources" "test/resources"]}
