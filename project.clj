@@ -1,4 +1,4 @@
-(defproject ovotech/kafka-avro-confluent "2.0.1-1"
+(defproject ovotech/kafka-avro-confluent "2.0.1-2"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
