@@ -14,7 +14,7 @@
                    :fields [{:name "fooId"
                              :type "string"}
                             {:name "fooDate"
-                             :type {:type :int
+                             :type {:type        :int
                                     :logicalType :date}}]})
 
 (def dummy-data {:fooId "42" :fooDate (LocalDate/of 2018 11 23)})
@@ -29,7 +29,7 @@
   (testing "Can round-trip"
     (let [serializer   (sut-ser/->avro-serializer schema-registry dummy-schema)
           deserializer (sut-des/->avro-deserializer schema-registry)
-          topic (dummy-topic)]
+          topic        (dummy-topic)]
 
       (is (= dummy-data
              (->> dummy-data
@@ -77,3 +77,14 @@
                  (sut-ser/->avro-serializer schema-registry
                                             :nefarious-serializer-type
                                             dummy-schema)))))
+
+(deftest can-stop-auto-conversion-of-logical-types
+  (testing "Can round-trip"
+    (let [serializer   (sut-ser/->avro-serializer schema-registry dummy-schema)
+          deserializer (sut-des/->avro-deserializer schema-registry :convert-logical-types? false)
+          topic        (dummy-topic)
+          {:keys [fooDate]} (->> dummy-data
+                                 (.serialize serializer topic)
+                                 (.deserialize deserializer topic))]
+
+      (is (= 17858 fooDate)))))

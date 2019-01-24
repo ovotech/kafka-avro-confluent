@@ -15,19 +15,20 @@
     array))
 
 (defn- -deserialize
-  [schema-registry data]
+  [schema-registry data convert-logical-types?]
   (when data
     (let [buffer    (ByteBuffer/wrap data)
           magic     (.get buffer)
           _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
           schema-id (.getInt buffer)
           schema    (registry/get-schema-by-id schema-registry schema-id)]
-      (avro/decode schema (byte-buffer->bytes buffer)))))
+      (binding [abracad.avro.conversion/*use-logical-types* convert-logical-types?]
+        (avro/decode schema (byte-buffer->bytes buffer))))))
 
-(deftype AvroDeserializer [schema-registry]
+(deftype AvroDeserializer [schema-registry convert-logical-types?]
   Deserializer
   (configure [_ _ _])
-  (deserialize [_ _ data] (-deserialize schema-registry data))
+  (deserialize [_ _ data] (-deserialize schema-registry data convert-logical-types?))
   (close [_]))
 
 (defn ->avro-deserializer
@@ -38,5 +39,6 @@
    See https://github.com/damballa/abracad"
   ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
   ^kafka_avro_confluent.deserializers.AvroDeserializer
-  [schema-registry]
-  (AvroDeserializer. schema-registry))
+  [schema-registry & {:keys [convert-logical-types?]
+                      :or   {convert-logical-types? true}}]
+  (AvroDeserializer. schema-registry convert-logical-types?))

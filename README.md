@@ -9,8 +9,7 @@ If you need to deserialise to the underlying primitive types you will need to di
 at the point of creating your deserialiser i.e.
 
 ```clojure
-(binding [abracad.avro.conversion/*use-logical-types* false]
-  (des/->avro-deserializer schema-registry))
+(des/->avro-deserializer schema-registry :convert-logical-types? false)
 ```
 
 ## Usage
