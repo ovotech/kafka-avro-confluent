@@ -65,13 +65,17 @@
 (s/fdef -serialize
         :args (s/cat :this some?
                      :topic string?
+                     :_headers (s/? any?)
                      :avro-record ::ks/avro-record))
-(defn -serialize [this topic avro-record]
-  (-serialize* (get-field this :schema-registry-client)
-               (get-field this :key?)
-               topic
-               (:schema avro-record)
-               (:value avro-record)))
+(defn -serialize
+  ([this topic avro-record]
+   (-serialize* (get-field this :schema-registry-client)
+                (get-field this :key?)
+                topic
+                (:schema avro-record)
+                (:value avro-record)))
+  ([this topic _headers avro-record]
+    (-serialize this topic avro-record)))
 
 ;; TODO cleanup memo caches?
 (defn -close [this])

@@ -29,6 +29,7 @@
   Deserializer
   (configure [_ _ _])
   (deserialize [_ _ data] (-deserialize schema-registry data convert-logical-types?))
+  (deserialize [_ _ _headers data] (-deserialize schema-registry data convert-logical-types?))
   (close [_]))
 
 (defn ->avro-deserializer

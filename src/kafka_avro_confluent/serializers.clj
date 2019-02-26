@@ -35,6 +35,7 @@
   Serializer
   (configure [_ _ _])
   (serialize [_ topic data] (-serialize schema-registry serializer-type topic schema data))
+  (serialize [_ topic _headers data] (-serialize schema-registry serializer-type topic schema data))
   (close [_]))
 
 (defn ->avro-serializer

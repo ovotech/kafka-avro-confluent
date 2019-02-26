@@ -57,9 +57,13 @@
 (s/fdef -deserialize
         :args (s/cat :this some?
                      :topic string?
+                     :_headers (s/? any?)
                      :data bytes?))
-(defn -deserialize [this _topic data]
-  (-deserialize* (get-field this :schema-registry-client) data))
+(defn -deserialize
+  ([this _topic data]
+   (-deserialize* (get-field this :schema-registry-client) data))
+  ([this topic _headers data]
+    (-deserialize this topic data)))
 
 ;; TODO cleanup memo caches?
 (defn -close [this])
