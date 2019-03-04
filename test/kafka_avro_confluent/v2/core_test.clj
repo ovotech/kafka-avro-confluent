@@ -37,6 +37,11 @@
              (->> {:value dummy-data :schema dummy-schema}
                   (.serialize serializer topic)
                   (.deserialize deserializer topic))))
+      (testing "works with nil headers"
+        (is (= dummy-data
+               (->> {:value dummy-data :schema dummy-schema}
+                    (.serialize serializer topic nil)
+                    (.deserialize deserializer topic nil)))))
       (testing "uses :value as default `serializer-type`"
         (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                                   (str topic "-value")))))))
