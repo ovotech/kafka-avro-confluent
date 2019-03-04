@@ -50,8 +50,10 @@
    See http://docs.confluent.io/current/schema-registry/docs
    See https://github.com/damballa/abracad"
   ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
-  (^kafka_avro_confluent.serializers.AvroSerializer [schema-registry schema]
-   (AvroSerializer. schema-registry :value schema))
-  (^kafka_avro_confluent.serializers.AvroSerializer [schema-registry serializer-type schema]
+  (^kafka_avro_confluent.serializers.AvroSerializer [schema-registry-client-or-config schema]
+   (->avro-serializer schema-registry-client-or-config :value schema))
+  (^kafka_avro_confluent.serializers.AvroSerializer [schema-registry-client-or-config serializer-type schema]
    {:pre [(#{:key :value} serializer-type)]}
-   (AvroSerializer. schema-registry serializer-type schema)))
+   (AvroSerializer. (registry/->schema-registry-client schema-registry-client-or-config)
+                    serializer-type
+                    schema)))

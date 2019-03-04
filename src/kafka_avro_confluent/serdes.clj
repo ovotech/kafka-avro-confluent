@@ -4,8 +4,8 @@
   (:import org.apache.kafka.common.serialization.Serdes))
 
 (defn ->avro-serde
-  ([schema-registry schema]
-   (->avro-serde schema-registry :value schema))
-  ([schema-registry serializer-type schema]
-   (Serdes/serdeFrom (kac.ser/->avro-serializer schema-registry serializer-type schema)
-                     (kac.des/->avro-deserializer schema-registry))))
+  ([schema-registry-client-or-config schema]
+   (->avro-serde schema-registry-client-or-config :value schema))
+  ([schema-registry-client-or-config serializer-type schema]
+   (Serdes/serdeFrom (kac.ser/->avro-serializer schema-registry-client-or-config serializer-type schema)
+                     (kac.des/->avro-deserializer schema-registry-client-or-config))))
