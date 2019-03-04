@@ -4,6 +4,7 @@
             [clojure.test :refer :all]
             [kafka-avro-confluent.v2.deserializer :as sut-des]
             [kafka-avro-confluent.v2.schema-registry-client :as sut-reg]
+            [kafka-avro-confluent.v2.serde :as sut-serde]
             [kafka-avro-confluent.v2.serializer :as sut-ser]
             [zookareg.core :as zkr])
   (:import java.util.UUID))
@@ -37,6 +38,11 @@
              (->> {:value dummy-data :schema dummy-schema}
                   (.serialize serializer topic)
                   (.deserialize deserializer topic))))
+      (testing "works with nil headers"
+        (is (= dummy-data
+               (->> {:value dummy-data :schema dummy-schema}
+                    (.serialize serializer topic nil)
+                    (.deserialize deserializer topic nil)))))
       (testing "uses :value as default `serializer-type`"
         (is (sut-reg/get-latest-schema-by-subject schema-registry-client
                                                   (str topic "-value")))))))
@@ -60,6 +66,20 @@
           schema       (avro/parse-schema dummy-schema)]
       (is (= dummy-data
              (->> {:value dummy-data :schema schema}
+                  (.serialize serializer topic)
+                  (.deserialize deserializer topic))))
+      (testing "uses :value as default `serializer-type`"
+        (is (sut-reg/get-latest-schema-by-subject schema-registry-client
+                                                  (str topic "-value")))))))
+
+(deftest avro-Serde
+  (testing "Can round-trip"
+    (let [serde        (sut-serde/->avro-serde config)
+          serializer   (.serializer serde)
+          deserializer (.deserializer serde)
+          topic        (dummy-topic)]
+      (is (= dummy-data
+             (->> {:value dummy-data :schema dummy-schema}
                   (.serialize serializer topic)
                   (.deserialize deserializer topic))))
       (testing "uses :value as default `serializer-type`"

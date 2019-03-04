@@ -40,6 +40,8 @@
    See https://github.com/damballa/abracad"
   ;; FIXME https://github.com/miner/eastwood#wrong-tag---an-incorrect-type-tag
   ^kafka_avro_confluent.deserializers.AvroDeserializer
-  [schema-registry & {:keys [convert-logical-types?]
-                      :or   {convert-logical-types? true}}]
-  (AvroDeserializer. schema-registry convert-logical-types?))
+  [schema-registry-client-or-config
+   & {:keys [convert-logical-types?]
+      :or   {convert-logical-types? true}}]
+  (AvroDeserializer. (registry/->schema-registry-client schema-registry-client-or-config)
+                     convert-logical-types?))

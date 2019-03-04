@@ -144,15 +144,25 @@
   (s/keys :req-un [::base-url]
           :opt-un [::username ::password]))
 
+(defn schema-registry-client? [x] (satisfies? SchemaRegistry x))
+(s/def ::client schema-registry-client?)
+
+(s/def ::config-or-client
+  (s/or :config ::config
+        :client ::client))
+
 (s/fdef ->schema-registry-client
-        :args (s/cat :config ::config))
+  :args (s/cat :config-or-client ::config-or-client))
 (defn ->schema-registry-client
   "Returns an instance of the schema-registry-client"
   (^kafka_avro_confluent.schema_registry_client.SchemaRegistry
-   [config]
-   (s/assert ::config config)
-   (let [memoized-fns
-         {:post-schema                  (memo -post-schema)
-          :get-schema-by-id             (memo -get-schema-by-id)
-          :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
-     (->SchemaRegistryImpl memoized-fns config))))
+   [config-or-client]
+   (s/assert ::config-or-client config-or-client)
+   (if (schema-registry-client? config-or-client)
+     config-or-client
+     (let [memoized-fns
+           {:post-schema                  (memo -post-schema)
+            :get-schema-by-id             (memo -get-schema-by-id)
+            :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
+       (->SchemaRegistryImpl memoized-fns config-or-client)))))
+
