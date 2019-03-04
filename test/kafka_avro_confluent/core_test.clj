@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [kafka-avro-confluent.deserializers :as sut-des]
             [kafka-avro-confluent.schema-registry-client :as sut-reg]
+            [kafka-avro-confluent.serdes :as sut-serde]
             [kafka-avro-confluent.serializers :as sut-ser]
             [zookareg.core :as zkr])
   (:import java.util.UUID
@@ -94,3 +95,17 @@
                                  (.deserialize deserializer topic))]
 
       (is (= 17858 fooDate)))))
+
+(deftest avro-Serde
+  (testing "Can round-trip"
+    (let [serde        (sut-serde/->avro-serde schema-registry dummy-schema)
+          serializer   (.serializer serde)
+          deserializer (.deserializer serde)
+          topic        (dummy-topic)]
+      (is (= dummy-data
+             (->> dummy-data
+                  (.serialize serializer topic)
+                  (.deserialize deserializer topic))))
+      (testing "uses :value as default `serializer-type`"
+        (is (sut-reg/get-latest-schema-by-subject schema-registry
+                                                  (str topic "-value")))))))
