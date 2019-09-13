@@ -24,7 +24,10 @@
 (defn- -serialize
   [schema-registry serializer-type topic schema data]
   (when data
-    (let [avro-schema      (avro/parse-schema schema)
+    (let [schema           (if (contains? schema :schemas)
+                             (get-in schema [:schemas topic])
+                             schema)
+          avro-schema      (avro/parse-schema schema)
           subject          (format "%s-%s" topic (name serializer-type))
           schema-id        (registry/post-schema schema-registry subject schema)
           serialized-bytes (->serialized-bytes schema-id avro-schema data)]
