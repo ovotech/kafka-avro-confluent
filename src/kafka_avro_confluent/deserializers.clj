@@ -4,7 +4,8 @@
   They all implement org.apache.kafka.common.serialization.Deserializer"
   (:require [abracad.avro :as avro]
             [kafka-avro-confluent.magic :as magic]
-            [kafka-avro-confluent.schema-registry-client :as registry])
+            [kafka-avro-confluent.schema-registry-client :as registry]
+            [clojure.tools.logging :as log])
   (:import java.nio.ByteBuffer
            org.apache.kafka.common.serialization.Deserializer))
 
@@ -20,10 +21,12 @@
     (let [buffer    (ByteBuffer/wrap data)
           magic     (.get buffer)
           _         (assert (= magic/magic magic) (str "Found different magic byte: " magic))
-          schema-id (.getInt buffer)
-          schema    (registry/get-schema-by-id schema-registry schema-id)]
-      (binding [abracad.avro.conversion/*use-logical-types* convert-logical-types?]
-        (avro/decode schema (byte-buffer->bytes buffer))))))
+          schema-id (.getInt buffer)]
+
+      (if-let [schema (registry/get-schema-by-id schema-registry schema-id)]
+        (binding [abracad.avro.conversion/*use-logical-types* convert-logical-types?]
+          (avro/decode schema (byte-buffer->bytes buffer)))
+        (throw (Exception. (format "Schema %s not found in registry." schema-id)))))))
 
 (deftype AvroDeserializer [schema-registry convert-logical-types?]
   Deserializer

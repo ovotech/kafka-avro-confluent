@@ -49,14 +49,19 @@ at the point of creating your deserialiser i.e.
 ;; implements org.apache.kafka.common.serialization.Serializer
 
 ;; meant to be used as a value-serializer in a KafkaProducer
-(ser/->avro-serializer config)
+(ser/->avro-serializer config schema)
 
 ;; If you want to use it as a key-serializer:
-(ser/->avro-serializer config :key? true)
+(ser/->avro-serializer config :key schema)
 
 ;; Using with a KafkaProducer:
 ;; e.g. (org.apache.kafka.clients.producer.KafkaProducer. key-serializer
 ;;                                                        value-serializer)
+
+;; If the serializer will be used with multiple topics (each with its own schema):
+(ser/->avro-serializer config (ser/->schemas-definition {topic1 schema1
+                                                         topic2 schema2}))
+
 ```
 
 

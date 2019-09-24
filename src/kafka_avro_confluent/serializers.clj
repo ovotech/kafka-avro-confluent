@@ -24,7 +24,10 @@
 (defn- -serialize
   [schema-registry serializer-type topic schema data]
   (when data
-    (let [avro-schema      (avro/parse-schema schema)
+    (let [schema           (if (:multiple-schemas? (meta schema))
+                             (get schema topic)
+                             schema)
+          avro-schema      (avro/parse-schema schema)
           subject          (format "%s-%s" topic (name serializer-type))
           schema-id        (registry/post-schema schema-registry subject schema)
           serialized-bytes (->serialized-bytes schema-id avro-schema data)]
@@ -37,6 +40,12 @@
   (serialize [_ topic data] (-serialize schema-registry serializer-type topic schema data))
   (serialize [_ topic _headers data] (-serialize schema-registry serializer-type topic schema data))
   (close [_]))
+
+(defn ->schemas-definition
+  [topic->schema-map]
+  (with-meta
+    topic->schema-map
+    {:multiple-schemas? true}))
 
 (defn ->avro-serializer
   "Avro serializer for Apache Kafka using Confluent's Schema Registry.
