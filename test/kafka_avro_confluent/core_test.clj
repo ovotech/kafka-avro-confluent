@@ -133,8 +133,9 @@
 (deftest serde-can-support-multiple-topics
   (let [[topic1 topic2] [(dummy-topic)
                          (dummy-topic)]
-        serde        (sut-serde/->avro-serde schema-registry {:schemas {topic1 dummy-schema1
-                                                                        topic2 dummy-schema2}})
+        serde        (->> (sut-ser/->schemas-definition {topic1 dummy-schema1
+                                                         topic2 dummy-schema2})
+                          (sut-serde/->avro-serde schema-registry))
         serializer   (.serializer serde)
         deserializer (.deserializer serde)]
     (is (= dummy-data1

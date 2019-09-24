@@ -52,15 +52,15 @@ at the point of creating your deserialiser i.e.
 (ser/->avro-serializer config schema)
 
 ;; If you want to use it as a key-serializer:
-(ser/->avro-serializer config :key? true schema)
+(ser/->avro-serializer config :key schema)
 
 ;; Using with a KafkaProducer:
 ;; e.g. (org.apache.kafka.clients.producer.KafkaProducer. key-serializer
 ;;                                                        value-serializer)
 
 ;; If the serializer will be used with multiple topics (each with its own schema):
-(ser/->avro-serializer config :key? true {:schemas {topic1 schema1
-                                                    topic2 schema2}})
+(ser/->avro-serializer config (ser/->schemas-definition {topic1 schema1
+                                                         topic2 schema2}))
 
 ```
 
