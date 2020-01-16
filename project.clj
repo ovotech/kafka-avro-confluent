@@ -9,7 +9,7 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/core.memoize "0.7.1"]
-                 [ovotech/abracad "0.4.15"]
+                 [ovotech/abracad "0.4.16"]
                  [cheshire "5.8.1"]
 
                  [clj-http "3.9.1"]
