@@ -18,8 +18,6 @@
                   :exclusions [org.scala-lang/scala-library]]
                  [org.clojure/tools.logging "0.4.1"]]
 
-  :clean-non-project-classes true
-
   :aot [kafka-avro-confluent.serializers
         kafka-avro-confluent.deserializers
         kafka-avro-confluent.v2.serializer
@@ -31,7 +29,9 @@
                                     [ch.qos.logback/logback-classic "1.2.3"]
                                     [ch.qos.logback/logback-core "1.2.3"]]
                    :resource-paths ["dev/resources" "test/resources"]}
-             :ci {:deploy-repositories [["clojars" {:url           "https://clojars.org/repo"
-                                                    :username      :env ;; LEIN_USERNAME
-                                                    :password      :env ;; LEIN_PASSWORD
-                                                    :sign-releases false}]]}})
+             :ci  {:deploy-repositories       [["clojars" {:url           "https://clojars.org/repo"
+                                                           :username      :env ;; LEIN_USERNAME
+                                                           :password      :env ;; LEIN_PASSWORD
+                                                           :sign-releases false}]]
+
+                   :clean-non-project-classes true}})
