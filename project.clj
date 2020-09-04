@@ -1,4 +1,4 @@
-(defproject ovotech/kafka-avro-confluent "2.1.0-5"
+(defproject ovotech/kafka-avro-confluent "2.1.0-6"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
@@ -17,6 +17,8 @@
                  [org.apache.kafka/kafka-clients "2.1.0"
                   :exclusions [org.scala-lang/scala-library]]
                  [org.clojure/tools.logging "0.4.1"]]
+
+  :clean-non-project-classes true
 
   :aot [kafka-avro-confluent.serializers
         kafka-avro-confluent.deserializers
