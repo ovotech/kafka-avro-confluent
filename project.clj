@@ -1,4 +1,4 @@
-(defproject ovotech/kafka-avro-confluent "2.1.0-6"
+(defproject ovotech/kafka-avro-confluent "2.1.0-7"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
@@ -10,9 +10,9 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/core.memoize "0.7.1"]
                  [ovotech/abracad "0.4.16"]
-                 [cheshire "5.8.1"]
+                 [cheshire "5.10.0"]
 
-                 [clj-http "3.9.1"]
+                 [clj-http "3.11.0"]
 
                  [org.apache.kafka/kafka-clients "2.1.0"
                   :exclusions [org.scala-lang/scala-library]]
