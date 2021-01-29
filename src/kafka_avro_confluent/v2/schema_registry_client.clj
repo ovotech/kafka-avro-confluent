@@ -133,15 +133,25 @@
     [_ id]
     ((:get-schema-by-id memoized-fns) config id)))
 
+(defn schema-registry-client? [x] (satisfies? SchemaRegistry x))
+(s/def ::client schema-registry-client?)
+
+(s/def ::config-or-client
+  (s/and (s/or :config :kafka.serde/config
+               :client ::client)
+         (s/conformer second)))
+
 (s/fdef ->schema-registry-client
-        :args (s/cat :config :kafka.serde/config))
+        :args (s/cat :config-or-client ::config-or-client))
 (defn ->schema-registry-client
   "Returns an instance of the schema-registry-client"
-  (^kafka_avro_confluent.schema_registry_client.SchemaRegistry
-   [config]
-   (s/assert :kafka.serde/config config)
-   (let [memoized-fns
-         {:post-schema                  (memo -post-schema)
-          :get-schema-by-id             (memo -get-schema-by-id)
-          :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
-     (->SchemaRegistryImpl memoized-fns config))))
+  (^kafka_avro_confluent.v2.schema_registry_client.SchemaRegistry
+   [config-or-client]
+   (s/assert ::config-or-client config-or-client)
+   (if (schema-registry-client? config-or-client)
+     config-or-client
+     (let [memoized-fns
+           {:post-schema                  (memo -post-schema)
+            :get-schema-by-id             (memo -get-schema-by-id)
+            :get-latest-schema-by-subject (memo -get-latest-schema-by-subject)}]
+       (->SchemaRegistryImpl memoized-fns config-or-client)))))
