@@ -46,12 +46,12 @@
 
 (s/fdef -configure
         :args (s/cat :this some?
-                     :config :kafka.serde/config
+                     :config :kafka-avro-confluent.v2.schema-registry-client/config-or-client
                      :_key? boolean?))
 (defn -configure [this config _key?]
   (reset! (.state this)
           {:schema-registry-client (->> config
-                                        (s/conform :kafka.serde/config)
+                                        (s/conform :kafka-avro-confluent.v2.schema-registry-client/config-or-client)
                                         sr/->schema-registry-client)}))
 
 (s/fdef -deserialize
