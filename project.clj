@@ -14,7 +14,7 @@
 
                  [clj-http "3.12.0"]
 
-                 [org.apache.kafka/kafka-clients "2.4.1"
+                 [org.apache.kafka/kafka-clients "2.7.0"
                   :exclusions [org.scala-lang/scala-library]]
                  [org.clojure/tools.logging "0.4.1"]]
 
@@ -25,7 +25,7 @@
 
   :repositories {"confluent" "https://packages.confluent.io/maven"}
 
-  :profiles {:dev {:dependencies   [[vise890/zookareg "2.4.1-1"]
+  :profiles {:dev {:dependencies   [[vise890/zookareg "2.7.0-1"]
                                     [ch.qos.logback/logback-classic "1.2.3"]
                                     [ch.qos.logback/logback-core "1.2.3"]]
                    :resource-paths ["dev/resources" "test/resources"]}
