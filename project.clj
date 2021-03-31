@@ -28,6 +28,7 @@
   :profiles {:dev {:dependencies   [[vise890/zookareg "2.1.0-1"]
                                     [ch.qos.logback/logback-classic "1.2.3"]
                                     [ch.qos.logback/logback-core "1.2.3"]]
+                   :plugins  [[lein-ancient "0.6.15"]]
                    :resource-paths ["dev/resources" "test/resources"]}
              :ci  {:deploy-repositories       [["clojars" {:url           "https://clojars.org/repo"
                                                            :username      :env ;; LEIN_USERNAME
