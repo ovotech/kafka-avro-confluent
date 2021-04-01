@@ -1,4 +1,4 @@
-(defproject ovotech/kafka-avro-confluent "2.4.1-8"
+(defproject ovotech/kafka-avro-confluent "2.7.0-1"
 
   :description "An Avro Kafka De/Serializer lib that works with Confluent's Schema Registry"
 
@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.10.2"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/core.memoize "0.7.1"]
                  [ovotech/abracad "0.4.16"]
                  [cheshire "5.10.0"]
