@@ -19,9 +19,6 @@ jobs:
           lein: 2.9.1
 
       - name: Find Outdated Deps
-        env:
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
         run: |
           lein ancient upgrade :all :check-clojure :no-tests :exclude manual
 
