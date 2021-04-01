@@ -20,7 +20,7 @@ jobs:
 
       - name: Find Outdated Deps
         run: |
-          lein ancient upgrade :all :check-clojure :no-tests :exclude manual
+          lein ancient upgrade :all :no-tests :exclude manual
 
           if [[ ! `git status --porcelain` ]]; then
               echo "DEPS_CHANGED=false" >> $GITHUB_ENV
